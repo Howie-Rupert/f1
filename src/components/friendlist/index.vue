@@ -64,8 +64,8 @@ export default {
   },
   methods: {
     getfriends() {
-      var id = this.$store.state.userid;
-      // var id = 16;
+      // var id = this.$store.state.userid;
+      var id = 16;
       return new Promise((resolve, rehect) => {
         axios({
           url: "http://www.test.com:8083/friendlist.php",
@@ -78,35 +78,30 @@ export default {
           if (res.data.code == 200) {
             res.data.data.forEach((item) => {
               if (item.bsq_userid != id) {
-                axios({
-                  url: "http://www.test.com:8083/getUserinfo.php",
-                  method: "get",
-                  params: {
-                    userid: item.bsq_userid,
-                  },
-                }).then((ress) => {
-                  if (ress.code != 200) {
-                    lists.push(ress.data.data[0]);
-                  }
-                  console.log("没结束", ress);
-                });
+                lists.push(item.bsq_userid);
               } else if (item.sq_userid != id) {
-                axios({
-                  url: "http://www.test.com:8083/getUserinfo.php",
-                  method: "get",
-                  params: {
-                    userid: item.sq_userid,
-                  },
-                }).then((ress) => {
-                  if (ress.code != 200) {
-                    lists.push(ress.data.data[0]);
-                  }
-                });
+                lists.push(item.sq_userid);
               }
             });
-            this.friendlist = lists;
+            lists = new Set(lists);
+            console.log('lists',lists)
+            var arr = []
+            lists.forEach((item) => {
+              axios({
+                url: "http://www.test.com:8083/getUserinfo.php",
+                method: "get",
+                params: {
+                  userid: item,
+                },
+              }).then((ress) => {
+                if (ress.code != 200) {
+                  arr.push(ress.data.data[0]);
+                }
+              });
+            });
+            this.friendlist = arr;
             setTimeout(() => {
-              resolve(lists);
+              resolve(arr);
             }, 200);
           }
         });

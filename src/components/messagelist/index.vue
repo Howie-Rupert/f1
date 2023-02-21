@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import img1 from "../../static/images/userimg.png";
 export default {
   data() {
@@ -46,6 +47,46 @@ export default {
         },
       ],
     };
+  },
+  mounted() {
+    this.getlist();
+  },
+  methods: {
+    getlist() {
+      var id = 16;
+      axios({
+        url: "http://www.test.com:8083/message.php",
+        method: "get",
+        params: {
+          userid: id,
+        },
+      }).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          var lists = [];
+          res.data.data.forEach((item) => {
+            lists.push(item.from_userid);
+            lists.push(item.to_userid);
+          });
+          lists = new Set(lists);
+          var arr = []
+          lists.forEach((item) => {
+            axios({
+              url: "http://www.test.com:8083/getUserinfo.php",
+              method: "get",
+              params: {
+                userid: item,
+              },
+            }).then((ress) => {
+              if (ress.code != 200) {
+                arr.push(ress.data.data[0]);
+              }
+            });
+          });
+          console.log()
+        }
+      });
+    },
   },
 };
 </script>
