@@ -5,13 +5,19 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    userid:''
+    userid: '',
+    contectuser: '006',
   },
   getters: {
+    contectuser: state => state.contectuser,
+
   },
   mutations: {
-    SET_USERID(state,e){
+    SET_USERID(state, e) {
       state.userid = e
+    },
+    SET_TOUSER(state, e) {
+      state.contectuser = e
     }
   },
   actions: {

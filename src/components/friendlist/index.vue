@@ -64,8 +64,8 @@ export default {
   },
   methods: {
     getfriends() {
-      // var id = this.$store.state.userid;
-      var id = 16;
+      var id = this.$store.state.userid;
+      // var id = 16;
       return new Promise((resolve, rehect) => {
         axios({
           url: "http://www.test.com:8083/friendlist.php",

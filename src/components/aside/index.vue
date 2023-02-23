@@ -51,8 +51,9 @@ export default {
   components: { Message, Friend },
   mounted() {
     this.userid = this.$store.state.userid;
-    this.getthisUserinfo(16);
-    this.getmessagelist();
+    // this.userid = 16;
+    this.getthisUserinfo(this.userid);
+    // this.getmessagelist();
   },
   methods: {
     getthisUserinfo(id) {

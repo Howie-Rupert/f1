@@ -1,16 +1,16 @@
 <template>
   <div class="messagebody">
     <div class="bodyname">
-      {{ username }}
+      {{ otherUserInfo.nickname }}
     </div>
     <div class="his_message" ref="his_message">
       <div v-for="(item, index) in message">
         <div class="timestamp">{{ renderMessageDate(item, index) }}</div>
         <div class="message_list">
-          <div v-if="currentid == item.from_userid" class="senduser">
+          <div v-if="$store.state.userid == item.from_userid" class="senduser">
             <el-avatar
               :size="35"
-              :src="circleUrl"
+              :src="currentUserInfo.usericon"
               class="from_avatar"
             ></el-avatar>
             <div class="from_message" v-if="item.message_type == 1">
@@ -38,11 +38,28 @@
                 alt=""
               />
             </div>
+            <a
+              v-if="item.message_type == 4"
+              :href="item.message"
+              download="download"
+            >
+              <div class="content-file" title="点击下载">
+                <div class="file-info">
+                  <span class="file-name">{{ item.messageName }}</span>
+                  <!-- <span class="file-size"
+                          >{{
+                            (message.payload.size / 1024).toFixed(2)
+                          }}KB</span
+                        > -->
+                </div>
+                <img class="file-img" src="../../static/images/file-icon.png" />
+              </div>
+            </a>
           </div>
           <div v-else class="sendeduser">
             <el-avatar
               :size="35"
-              :src="circleUrl"
+              :src="otherUserInfo.usericon"
               class="to_avatar"
             ></el-avatar>
             <div class="to_message" v-if="item.message_type == 1">
@@ -65,6 +82,7 @@
               ></video>
               <img
                 @dragstart.prevent
+                @click="openimg(item.message, 'video')"
                 class="pause_btn"
                 src="../../static/images/pause.png"
                 alt=""
@@ -73,12 +91,11 @@
             <a
               v-if="item.message_type == 4"
               :href="item.message"
-              target="_blank"
               download="download"
             >
               <div class="content-file" title="点击下载">
                 <div class="file-info">
-                  <span class="file-name">{{ item.message_name }}</span>
+                  <span class="file-name">{{ item.messageName }}</span>
                   <!-- <span class="file-size"
                           >{{
                             (message.payload.size / 1024).toFixed(2)
@@ -117,12 +134,12 @@
         </div>
         <!-- 视频 -->
         <div class="action-item">
-          <VideoUpload for="video-input" @input="filelist"></VideoUpload>
+          <VideoUpload for="video-input" @input="filelist1"></VideoUpload>
         </div>
         <!-- 文件 -->
         <div class="action-item">
           <label for="file-input">
-            <FileUpload for="video-input" @input="filelist"></FileUpload>
+            <FileUpload for="video-input" @input="filelist2"></FileUpload>
           </label>
         </div>
         <!-- <div class="action-item">
@@ -159,6 +176,7 @@ import img1 from "../../assets/ava.jpg";
 import img2 from "../../static/images/img1.png";
 import video1 from "../../static/video/01.mp4";
 import axios from "axios";
+import { mapGetters } from "vuex";
 export default {
   components: { Emoji, ImgUpload, VideoUpload, FileUpload },
   data() {
@@ -169,96 +187,142 @@ export default {
       showEmoji: false,
       textarea: "",
       cursorIndex: "",
-      currentid: "16",
-      to_userId: "16",
-      message: [
-        {
-          timestamp: 1676447963084,
-          from_userid: "16",
-          to_userid: "17",
-          message_type: "1",
-          message: "测试",
-          message_name: "",
-        },
-        {
-          timestamp: 1676447963084,
-          from_userid: "16",
-          to_userid: "17",
-          message_type: "2",
-          message: img1,
-          message_name: "",
-        },
-        {
-          timestamp: 1676447963084,
-          from_userid: "17",
-          to_userid: "16",
-          message_type: "2",
-          message: img2,
-          message_name: "",
-        },
-        {
-          timestamp: 1676447964084,
-          from_userid: "17",
-          to_userid: "16",
-          message_type: "1",
-          message: "测试1",
-          message_name: "",
-        },
-        {
-          timestamp: 1676447965084,
-          from_userid: "16",
-          to_userid: "17",
-          message_type: "1",
-          message_name: "",
-          message:
-            "测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2测试2",
-        },
-        {
-          timestamp: 1676448470499,
-          from_userid: "16",
-          to_userid: "17",
-          message_type: "1",
-          message: "测试3",
-          message_name: "",
-        },
-        {
-          timestamp: 1676448470499,
-          from_userid: "17",
-          to_userid: "16",
-          message_type: "1",
-          message: "测试4",
-          message_name: "",
-        },
-        {
-          timestamp: 1676448470499,
-          from_userid: "17",
-          to_userid: "16",
-          message_type: "3",
-          message: video1,
-          message_name: "",
-        },
-        {
-          timestamp: 1676613203431,
-          from_userid: "17",
-          to_userid: "16",
-          message_type: "4",
-          message: video1,
-          message_name: "download1",
-        },
-      ],
+      currentid: "",
+      to_userId: "",
+      otherUserInfo: "",
+      message: [],
+      otheruser: "",
+      currentUserInfo: "",
+      wsUrl: "ws://127.0.0.1:1234", // ws地址
+      websock: null, // ws实例
+      message: "",
     };
   },
   mounted() {
+    this.initWebSocket();
     console.log(Date.now());
+    axios({
+      url: "http://www.test.com:8083/getUserinfo.php",
+      method: "get",
+      params: {
+        userid: this.$store.state.userid,
+      },
+    }).then((res) => {
+      if (res.data.code == 200) {
+        this.currentUserInfo = res.data.data[0];
+      }
+    });
     this.$nextTick(() => {
       var div = this.$refs.his_message;
       div.scrollTop = div.scrollHeight;
       console.log("scrollHeight", div.scrollHeight);
       console.log("scrolltop", div.scrollTop);
     });
+    this.getmessagelist();
+    this.getUserInfo();
   },
-
+  computed: {
+    ...mapGetters(["contectuser"]),
+    otherUserId() {
+      return this.contectuser;
+    },
+  },
+  watch: {
+    otherUserId(newData, oldData) {
+      this.otheruser = newData;
+      this.getmessagelist();
+      this.getUserInfo();
+    },
+  },
+  beforeDestroy() {
+    this.websock.close();
+  },
   methods: {
+    // 初始化weosocket
+    initWebSocket() {
+      if (typeof WebSocket === "undefined")
+        return console.log("您的浏览器不支持websocket");
+      this.websock = new WebSocket(this.wsUrl);
+      this.websock.onmessage = this.websocketonmessage;
+      this.websock.onopen = this.websocketonopen;
+      this.websock.onerror = this.websocketonerror;
+      this.websock.onclose = this.websocketclose;
+    },
+    websocketonopen() {
+      // 连接建立之后执行send方法发送数据
+      let actions = {
+        type: "login",
+        msg: this.$store.state.userid + "用户进入",
+        userid: this.$store.state.userid,
+      };
+      this.websocketsend(JSON.stringify(actions));
+    },
+    websocketonerror() {
+      // 连接建立失败重连
+      this.initWebSocket();
+    },
+    websocketonmessage(e) {
+      // 数据接收
+      const redata = JSON.parse(e.data);
+      console.log("接收的数据", redata);
+      this.getmessagelist();
+    },
+    websocketsend(Data) {
+      // 数据发送
+      this.websock.send(Data);
+    },
+    websocketclose(e) {
+      // 关闭
+      console.log("断开连接", e);
+    },
+    before_ws_send() {
+      var to_userId = this.otherUserId;
+      var data = {
+        type: "user",
+        to_userid: to_userId,
+        msg: "1",
+      };
+      this.websocketsend(JSON.stringify(data));
+    },
+    getUserInfo() {
+      axios({
+        url: "http://www.test.com:8083/getUserinfo.php",
+        method: "get",
+        params: {
+          userid: this.otheruser,
+        },
+      }).then((res) => {
+        console.log("userinfo", res);
+        if (res.data.code == 200) {
+          this.otherUserInfo = res.data.data[0];
+        }
+      });
+    },
+    getmessagelist() {
+      var id = this.$store.state.userid;
+      console.log("getmessagelist中", this.otheruser);
+      axios({
+        url: "http://www.test.com:8083/getAllMessage.php",
+        method: "get",
+        params: {
+          userid: id,
+        },
+      }).then((res) => {
+        var message = [];
+        console.log("gusss", res);
+        if (res.data.code == 200) {
+          res.data.data.forEach((item) => {
+            if (
+              (item.from_userid == id && item.to_userid == this.otheruser) ||
+              (item.from_userid == this.otheruser && item.to_userid == id)
+            ) {
+              message.push(item);
+            }
+          });
+          this.message = message;
+        }
+      });
+    },
     formatDate,
     emoji(index) {
       console.log("父组件", index);
@@ -272,8 +336,81 @@ export default {
         s2.substring(this.cursorIndex, len);
       this.showEmoji = false;
     },
+    //图片
     filelist(index) {
       console.log("父元素", index);
+      var userId = this.$store.state.userid;
+      var to_userId = this.otherUserId;
+      var messagetype = 2;
+      axios({
+        url: "http://www.test.com:8083/sendmessage.php",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "post",
+        data: {
+          userid: userId,
+          to_userid: to_userId,
+          message_type: messagetype,
+          message: "http://www.test.com:8083/upload/" + index,
+        },
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code == 200) {
+          this.textarea = "";
+          this.getmessagelist();
+          this.before_ws_send();
+        }
+      });
+    },
+    //视频
+    filelist1(index) {
+      console.log("父元素", index);
+      var userId = this.$store.state.userid;
+      var to_userId = this.otherUserId;
+      var messagetype = 3;
+      axios({
+        url: "http://www.test.com:8083/sendmessage.php",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "post",
+        data: {
+          userid: userId,
+          to_userid: to_userId,
+          message_type: messagetype,
+          message: "http://www.test.com:8083/upload/" + index[0].name,
+        },
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code == 200) {
+          this.textarea = "";
+          this.getmessagelist();
+          this.before_ws_send();
+        }
+      });
+    },
+    //文件
+    filelist2(index) {
+      console.log("父元素", index);
+      var userId = this.$store.state.userid;
+      var to_userId = this.otherUserId;
+      var messagetype = 4;
+      axios({
+        url: "http://www.test.com:8083/sendmessage.php",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "post",
+        data: {
+          userid: userId,
+          to_userid: to_userId,
+          message_type: messagetype,
+          message: "http://www.test.com:8083/upload/" + index[0].name,
+          message_name: index[0].name,
+        },
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code == 200) {
+          this.textarea = "";
+          this.getmessagelist();
+          this.before_ws_send();
+        }
+      });
     },
     handleInputBlur(e) {
       this.cursorIndex = e.srcElement.selectionStart;
@@ -303,14 +440,15 @@ export default {
     },
     //计算间隔时间
     renderMessageDate(message, index) {
+      var messageTime = new Date(parseInt(message.messageTime) * 1000);
       if (index === 0) {
-        return this.formatDate(message.timestamp);
+        return this.formatDate(messageTime);
       } else {
-        if (
-          message.timestamp - this.message[index - 1].timestamp >
-          5 * 60 * 1000
-        ) {
-          return this.formatDate(message.timestamp);
+        var far_messageTime = new Date(
+          parseInt(this.message[index - 1].messageTime) * 1000
+        );
+        if (messageTime - far_messageTime > 5 * 60 * 1000) {
+          return this.formatDate(messageTime);
         }
       }
       return "";
@@ -326,7 +464,7 @@ export default {
     },
     sendmessage() {
       var userId = this.$store.state.userid;
-      var to_userId = this.to_userId;
+      var to_userId = this.otherUserId;
       var message = this.textarea;
       var messagetype = 1;
       axios({
@@ -343,6 +481,8 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.textarea = "";
+          this.getmessagelist();
+          this.before_ws_send();
         }
       });
     },
@@ -390,6 +530,7 @@ export default {
   height: calc(100% - 130px) !important;
   overflow: auto;
   background-color: #f5f5f5;
+  z-index: 99;
 }
 /deep/.el-textarea__inner::-webkit-scrollbar {
   width: 10px;

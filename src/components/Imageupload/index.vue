@@ -31,7 +31,7 @@ export default {
     // 图片数量限制
     limit: {
       type: Number,
-      default: 1,
+      default: 999999,
     },
     // 大小限制(MB)
     fileSize: {
@@ -41,7 +41,7 @@ export default {
     // 文件类型, 例如['png', 'jpg', 'jpeg']
     fileType: {
       type: Array,
-      default: () => ["png", "jpg", "jpeg"],
+      default: () => ["JPG", "PNG", "JPEG","jpg", "png", "jpeg"],
     },
   },
   data() {
@@ -155,6 +155,7 @@ export default {
       this.number++;
     },
     getfile(file) {
+      this.fileList = []
       console.log("上传接口", file);
       const formData = new FormData();
       if (Array.isArray(file.file)) {
