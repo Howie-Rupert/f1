@@ -7,10 +7,11 @@ export default new Vuex.Store({
   state: {
     userid: '',
     contectuser: '006',
+    haveMessage:''
   },
   getters: {
     contectuser: state => state.contectuser,
-
+    haveMessage: state => state.haveMessage,
   },
   mutations: {
     SET_USERID(state, e) {
@@ -18,6 +19,9 @@ export default new Vuex.Store({
     },
     SET_TOUSER(state, e) {
       state.contectuser = e
+    },
+    SET_MESSAGE(state, e) {
+      state.haveMessage = e
     }
   },
   actions: {

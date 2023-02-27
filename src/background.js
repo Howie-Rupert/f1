@@ -50,6 +50,10 @@ async function createWindow() {
   ipcMain.on("closeWindowMain", e => {
     app.exit()
   })
+  ipcMain.on("restart", e => {
+    app.relaunch();
+    app.exit()
+  })
   ipcMain.on('newwindow', function (e, arg) {
     const winURL = process.env.NODE_ENV === 'development'
       ? `http://localhost:8080`
@@ -63,6 +67,7 @@ async function createWindow() {
     newWin = new BrowserWindow({
       width: 1920,
       height: 1080,
+      title: "详细资源",
       frame: true,
       fullscreen: false,
       webPreferences: {
@@ -74,6 +79,70 @@ async function createWindow() {
       }
     })
     newWin.loadURL(winURL + '#/SourceDetail')
+    newWin.on('ready-to-show', function () {
+      newWin.show()
+    })
+    newWin.on('close', () => {
+      console.log('close')
+      newWin = null
+    })
+  })
+  ipcMain.on('addfriend', function (e, arg) {
+    const winURL = process.env.NODE_ENV === 'development'
+      ? `http://localhost:8080`
+      : `file://${__dirname}/index.html`
+    // http://localhost:8080 可根据自己项目运行端口配置
+    var newWin = ''
+    if (newWin) {
+      newWin.focus()
+      return
+    }
+    newWin = new BrowserWindow({
+      width: 1000,
+      height: 800,
+      frame: true,
+      fullscreen: false,
+      webPreferences: {
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+        webSecurity: false
+      }
+    })
+    newWin.loadURL(winURL + '#/Addfriend')
+    newWin.on('ready-to-show', function () {
+      newWin.show()
+    })
+    newWin.on('close', () => {
+      console.log('close')
+      newWin = null
+    })
+  })
+  ipcMain.on('shenqing', function (e, arg) {
+    const winURL = process.env.NODE_ENV === 'development'
+      ? `http://localhost:8080`
+      : `file://${__dirname}/index.html`
+    // http://localhost:8080 可根据自己项目运行端口配置
+    var newWin = ''
+    if (newWin) {
+      newWin.focus()
+      return
+    }
+    newWin = new BrowserWindow({
+      width: 800,
+      height: 600,
+      frame: true,
+      fullscreen: false,
+      webPreferences: {
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+        webSecurity: false
+      }
+    })
+    newWin.loadURL(winURL + '#/Shenqing')
     newWin.on('ready-to-show', function () {
       newWin.show()
     })

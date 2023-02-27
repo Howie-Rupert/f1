@@ -7,7 +7,8 @@
       <div v-for="(item, index) in message">
         <div class="timestamp">{{ renderMessageDate(item, index) }}</div>
         <div class="message_list">
-          <div v-if="$store.state.userid == item.from_userid" class="senduser">
+          <!-- <div v-if="$store.state.userid == item.from_userid" class="senduser"> -->
+          <div v-if="16 == item.from_userid" class="senduser">
             <el-avatar
               :size="35"
               :src="currentUserInfo.usericon"
@@ -172,9 +173,6 @@ import VideoUpload from "../../components/Videoupload";
 import FileUpload from "../../components/FileUpload";
 import { ipcRenderer, desktopCapturer, BrowserWindow } from "electron";
 import { formatDate } from "../../utils/utils";
-import img1 from "../../assets/ava.jpg";
-import img2 from "../../static/images/img1.png";
-import video1 from "../../static/video/01.mp4";
 import axios from "axios";
 import { mapGetters } from "vuex";
 export default {
@@ -205,21 +203,19 @@ export default {
       url: "http://www.test.com:8083/getUserinfo.php",
       method: "get",
       params: {
-        userid: this.$store.state.userid,
+        // userid: this.$store.state.userid,
+        userid: 16,
       },
     }).then((res) => {
       if (res.data.code == 200) {
         this.currentUserInfo = res.data.data[0];
       }
     });
-    this.$nextTick(() => {
-      var div = this.$refs.his_message;
-      div.scrollTop = div.scrollHeight;
-      console.log("scrollHeight", div.scrollHeight);
-      console.log("scrolltop", div.scrollTop);
-    });
     this.getmessagelist();
     this.getUserInfo();
+    this.$nextTick(() => {
+      this.$refs.his_message.scrollTop = this.$refs.his_message.scrollHeight;
+    });
   },
   computed: {
     ...mapGetters(["contectuser"]),
@@ -252,8 +248,10 @@ export default {
       // 连接建立之后执行send方法发送数据
       let actions = {
         type: "login",
-        msg: this.$store.state.userid + "用户进入",
-        userid: this.$store.state.userid,
+        // msg: this.$store.state.userid + "用户进入",
+        // userid: this.$store.state.userid,
+        msg: 16 + "用户进入",
+        userid: 16,
       };
       this.websocketsend(JSON.stringify(actions));
     },
@@ -266,10 +264,12 @@ export default {
       const redata = JSON.parse(e.data);
       console.log("接收的数据", redata);
       this.getmessagelist();
+      this.$store.commit("SET_MESSAGE", true);
     },
     websocketsend(Data) {
       // 数据发送
       this.websock.send(Data);
+      this.$store.commit("SET_MESSAGE", true);
     },
     websocketclose(e) {
       // 关闭
@@ -299,7 +299,8 @@ export default {
       });
     },
     getmessagelist() {
-      var id = this.$store.state.userid;
+      // var id = this.$store.state.userid;
+      var id = 16;
       console.log("getmessagelist中", this.otheruser);
       axios({
         url: "http://www.test.com:8083/getAllMessage.php",
@@ -320,6 +321,11 @@ export default {
             }
           });
           this.message = message;
+          // 让滚动条始终在最底部
+          this.$nextTick(() => {
+            this.$refs.his_message.scrollTop =
+              this.$refs.his_message.scrollHeight;
+          });
         }
       });
     },
@@ -339,7 +345,8 @@ export default {
     //图片
     filelist(index) {
       console.log("父元素", index);
-      var userId = this.$store.state.userid;
+      // var userId = this.$store.state.userid;
+      var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 2;
       axios({
@@ -364,7 +371,8 @@ export default {
     //视频
     filelist1(index) {
       console.log("父元素", index);
-      var userId = this.$store.state.userid;
+      // var userId = this.$store.state.userid;
+      var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 3;
       axios({
@@ -389,7 +397,8 @@ export default {
     //文件
     filelist2(index) {
       console.log("父元素", index);
-      var userId = this.$store.state.userid;
+      // var userId = this.$store.state.userid;
+      var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 4;
       axios({
@@ -463,7 +472,8 @@ export default {
       ipcRenderer.send("newwindow");
     },
     sendmessage() {
-      var userId = this.$store.state.userid;
+      // var userId = this.$store.state.userid;
+      var userId = 16;
       var to_userId = this.otherUserId;
       var message = this.textarea;
       var messagetype = 1;

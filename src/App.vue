@@ -23,4 +23,7 @@ a {
   font-size: 20px;
   color: #333;
 }
+.el-container {
+  overflow: hidden !important;
+}
 </style>

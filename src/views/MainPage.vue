@@ -50,4 +50,5 @@ export default {
   height: 1px;
   /* border-top: 1px solid #d6d6d6; */
 }
+
 </style>

@@ -2,7 +2,11 @@
   <div class="aside">
     <div class="userinfo">
       <div class="block">
-        <el-avatar shape="square" :size="50" :src="userinfo.usericon"></el-avatar>
+        <el-avatar
+          shape="square"
+          :size="50"
+          :src="userinfo.usericon"
+        ></el-avatar>
       </div>
       <div class="text_box">
         <div>{{ userinfo.nickname }}</div>
@@ -21,6 +25,26 @@
       <Message v-if="show_list == 0" />
       <Friend v-if="show_list == 1" />
     </div>
+    <div class="search">
+      <img
+        @click="logout"
+        class="add_fri"
+        src="../../static/images/logout.png"
+        alt=""
+      />
+      <img
+        @click="openFri"
+        class="add_fri"
+        src="../../static/images/add_fri.png"
+        alt=""
+      />
+      <img
+        @click="openShenqing"
+        class="add_fri"
+        src="../../static/images/menu.png"
+        alt=""
+      />
+    </div>
   </div>
 </template>
 
@@ -33,6 +57,8 @@ import fl_img from "../../static/images/friendlist.png";
 import fl_l_img from "../../static/images/friendlist_l.png";
 import Message from "../messagelist";
 import Friend from "../friendlist";
+import { mapGetters } from "vuex";
+import { ipcRenderer } from "electron";
 export default {
   data() {
     return {
@@ -46,6 +72,7 @@ export default {
       fl_img,
       fl_l_img,
       userinfo: "",
+      otheruser: "",
     };
   },
   components: { Message, Friend },
@@ -54,6 +81,20 @@ export default {
     // this.userid = 16;
     this.getthisUserinfo(this.userid);
     // this.getmessagelist();
+  },
+  computed: {
+    ...mapGetters(["contectuser"]),
+    otherUserId() {
+      return this.contectuser;
+    },
+  },
+  watch: {
+    otherUserId(newData, oldData) {
+      this.otheruser = newData;
+      if (newData != oldData) {
+        this.show_list = 0;
+      }
+    },
   },
   methods: {
     getthisUserinfo(id) {
@@ -111,6 +152,19 @@ export default {
         console.log(this.messagelist);
       });
     },
+    openFri() {
+      ipcRenderer.send("addfriend");
+    },
+    openShenqing() {
+      ipcRenderer.send("shenqing");
+    },
+    logout() {
+      this.$store.commit("SET_USERID", "");
+      this.$store.commit("SET_TOUSER", "");
+      this.$store.commit("SET_MESSAGE", "");
+      localStorage.clear();
+      this.$router.push("/");
+    },
   },
 };
 </script>
@@ -120,12 +174,26 @@ export default {
   width: calc(100% - 1px);
   height: 100vh;
   border-right: 1px solid #eee;
-  overflow: hidden;
+  position: relative;
 }
 .content {
-  height: auto;
+  height: calc(100% - 150px);
   display: flex;
+  overflow: auto;
   flex-direction: column;
+}
+/deep/.content::-webkit-scrollbar {
+  width: 10px;
+}
+/deep/.content::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #d2d2d2;
+}
+/deep/.content::-webkit-scrollbar-button {
+  width: 10px;
+  border-radius: 50%;
+  background: black;
+  display: none;
 }
 .messages_item {
   width: 100%;
@@ -182,5 +250,24 @@ export default {
 }
 .btn > img {
   width: 30px;
+}
+.search {
+  width: 100%;
+  height: 40px;
+  border-bottom: 1px solid #d6d6d6;
+  border-top: 1px solid #d6d6d6;
+  position: absolute;
+  bottom: 0px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  background-color: #ffffff;
+}
+.add_fri {
+  width: 30px;
+  height: 30px;
+  margin-left: 20px;
+  cursor: pointer;
 }
 </style>

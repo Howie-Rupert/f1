@@ -23,6 +23,14 @@ const routes = [
     path:'/SourceDetail',
     name:'test',
     component:() => import('../views/SourceDetail.vue')
+  },
+  {
+    path:'/Addfriend',
+    component:() => import('../views/AddFriend.vue')
+  },
+  {
+    path:'/Shenqing',
+    component:() => import('../views/ShenQing.vue')
   }
 ]
 

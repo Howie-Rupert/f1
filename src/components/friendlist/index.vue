@@ -2,7 +2,7 @@
   <div class="friendlistbody">
     <div v-for="item in afterSortList" class="friendrow">
       <div class="sort">{{ item.sort }}</div>
-      <div v-for="ite in item.list" class="name_img">
+      <div v-for="ite in item.list" class="name_img" @click="openview(ite)">
         <img class="userimg" :src="ite.usericon" alt="" />
         <div class="username">
           {{ ite.nickname }}
@@ -14,49 +14,11 @@
 
 <script>
 import { getSpell } from "jian-pinyin";
-import img1 from "../../static/images/userimg.png";
 import axios from "axios";
 export default {
   data() {
     return {
-      friendlist: [
-        {
-          userimg: img1,
-          name: "张三",
-        },
-        {
-          userimg: img1,
-          name: "李三",
-        },
-        {
-          userimg: img1,
-          name: "王三",
-        },
-        {
-          userimg: img1,
-          name: "赵三",
-        },
-        {
-          userimg: img1,
-          name: "赵三",
-        },
-        {
-          userimg: img1,
-          name: "赵三",
-        },
-        {
-          userimg: img1,
-          name: "赵三",
-        },
-        {
-          userimg: img1,
-          name: "艾三",
-        },
-        {
-          userimg: img1,
-          name: "A艾三",
-        },
-      ],
+      friendlist: [],
       pylist: [],
       afterSortList: [],
       friendlistss: [],
@@ -84,8 +46,8 @@ export default {
               }
             });
             lists = new Set(lists);
-            console.log('lists',lists)
-            var arr = []
+            console.log("lists", lists);
+            var arr = [];
             lists.forEach((item) => {
               axios({
                 url: "http://www.test.com:8083/getUserinfo.php",
@@ -154,6 +116,10 @@ export default {
       this.afterSortList = newfirendlist;
       console.log("排序", this.afterSortList);
     },
+    openview(item) {
+      console.log(item.id);
+      this.$store.commit("SET_TOUSER", item.id);
+    },
   },
   mounted() {
     var that = this;
@@ -188,6 +154,7 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  cursor: pointer;
 }
 .userimg {
   width: 50px;
