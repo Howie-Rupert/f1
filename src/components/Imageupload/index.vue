@@ -52,7 +52,7 @@ export default {
       dialogVisible: false,
       hideUpload: false,
       baseUrl: process.env.VUE_APP_BASE_API,
-      uploadImgUrl: "http://www.test.com:8083/fileupload.php", // 上传的图片服务器地址
+      uploadImgUrl: this.baseUrl + "fileupload.php", // 上传的图片服务器地址
       fileList: [],
       headers: { "Content-Type": "multipart/form-data" },
     };
@@ -161,7 +161,6 @@ export default {
       if (Array.isArray(file.file)) {
         file.forEach((item) => {
           console.log(item);
-
           formData.append("file", item);
         });
         console.log(formData);

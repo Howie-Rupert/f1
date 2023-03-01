@@ -1,6 +1,6 @@
 <template>
   <div class="aside">
-    <div class="userinfo">
+    <div class="userinfo" @click="openmyview">
       <div class="block">
         <el-avatar
           shape="square"
@@ -10,7 +10,7 @@
       </div>
       <div class="text_box">
         <div>{{ userinfo.nickname }}</div>
-        <div class="user_sign">个性签名</div>
+        <div class="user_sign">{{ userinfo.slog }}</div>
       </div>
     </div>
     <div class="btn_content">
@@ -72,6 +72,7 @@ export default {
       fl_img,
       fl_l_img,
       userinfo: "",
+      time: "",
       otheruser: "",
     };
   },
@@ -80,7 +81,16 @@ export default {
     this.userid = this.$store.state.userid;
     // this.userid = 16;
     this.getthisUserinfo(this.userid);
-    // this.getmessagelist();
+    this.time = setInterval(() => {
+      this.haschange = localStorage.getItem("haschange");
+      if (this.haschange == 1) {
+        this.getthisUserinfo(this.userid);
+        localStorage.setItem("haschange", 0);
+      }
+    }, 200);
+  },
+  beforeDestroy() {
+    clearInterval(this.time);
   },
   computed: {
     ...mapGetters(["contectuser"]),
@@ -99,7 +109,7 @@ export default {
   methods: {
     getthisUserinfo(id) {
       axios({
-        url: "http://www.test.com:8083/getUserinfo.php",
+        url: this.baseUrl + "getUserinfo.php",
         method: "get",
         params: {
           userid: id,
@@ -113,7 +123,7 @@ export default {
     getmessagelist() {
       var userid = window.localStorage.getItem("userid");
       axios({
-        url: "http://www.test.com:8083/message.php",
+        url: this.baseUrl + "message.php",
         method: "post",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         data: {
@@ -124,7 +134,7 @@ export default {
         res.data.data.forEach((item) => {
           if (item.from_userid != userid) {
             axios({
-              url: "http://www.test.com:8083/search.php",
+              url: this.baseUrl + "search.php",
               headers: { "Content-Type": "application/x-www-form-urlencoded" },
               method: "post",
               data: {
@@ -136,7 +146,7 @@ export default {
             });
           } else if (item.to_userid != userid) {
             axios({
-              url: "http://www.test.com:8083/search.php",
+              url: this.baseUrl + "search.php",
               headers: { "Content-Type": "application/x-www-form-urlencoded" },
               method: "post",
               data: {
@@ -153,10 +163,10 @@ export default {
       });
     },
     openFri() {
-      ipcRenderer.send("addfriend");
+      ipcRenderer.send("addfriend",this.$store.state.userid);
     },
     openShenqing() {
-      ipcRenderer.send("shenqing");
+      ipcRenderer.send("shenqing",this.$store.state.userid);
     },
     logout() {
       this.$store.commit("SET_USERID", "");
@@ -164,6 +174,9 @@ export default {
       this.$store.commit("SET_MESSAGE", "");
       localStorage.clear();
       this.$router.push("/");
+    },
+    openmyview() {
+      ipcRenderer.send("myinfo",this.$store.state.userid);
     },
   },
 };
@@ -219,6 +232,7 @@ export default {
   padding: 10px 20px 10px 20px;
   /* padding: 20px; */
   border-bottom: 1px solid #eee;
+  cursor: pointer;
 }
 .text_box {
   margin-left: 10px;

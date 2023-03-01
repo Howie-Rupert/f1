@@ -82,6 +82,9 @@ async function createWindow() {
     newWin.on('ready-to-show', function () {
       newWin.show()
     })
+    setTimeout(()=>{
+      newWin.webContents.send("infomation",arg)
+    },2000)
     newWin.on('close', () => {
       console.log('close')
       newWin = null
@@ -114,12 +117,16 @@ async function createWindow() {
     newWin.on('ready-to-show', function () {
       newWin.show()
     })
+    setTimeout(()=>{
+      newWin.webContents.send("getUserid",arg)
+    },2000)
     newWin.on('close', () => {
       console.log('close')
       newWin = null
     })
   })
   ipcMain.on('shenqing', function (e, arg) {
+    
     const winURL = process.env.NODE_ENV === 'development'
       ? `http://localhost:8080`
       : `file://${__dirname}/index.html`
@@ -142,10 +149,49 @@ async function createWindow() {
         webSecurity: false
       }
     })
+    
     newWin.loadURL(winURL + '#/Shenqing')
     newWin.on('ready-to-show', function () {
       newWin.show()
     })
+    setTimeout(()=>{
+      newWin.webContents.send("getUserid",arg)
+    },2000)
+    newWin.on('close', () => {
+      console.log('close')
+      newWin = null
+    })
+  })
+  ipcMain.on('myinfo', function (e, arg) {
+    const winURL = process.env.NODE_ENV === 'development'
+      ? `http://localhost:8080`
+      : `file://${__dirname}/index.html`
+    // http://localhost:8080 可根据自己项目运行端口配置
+    var newWin = ''
+    if (newWin) {
+      newWin.focus()
+      return
+    }
+    newWin = new BrowserWindow({
+      width: 600,
+      height: 700,
+      frame: true,
+      fullscreen: false,
+      webPreferences: {
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+        webSecurity: false
+      }
+    })
+    newWin.loadURL(winURL + '#/MyInfo')
+    newWin.on('ready-to-show', function () {
+      newWin.show()
+    })
+    setTimeout(()=>{
+      newWin.webContents.send("getUserid",arg)
+    },2000)
     newWin.on('close', () => {
       console.log('close')
       newWin = null

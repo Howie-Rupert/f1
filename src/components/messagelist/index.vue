@@ -30,14 +30,14 @@
         <div class="sendtime">
           {{ item.messageTime }}
         </div>
-        <!-- <div
-          class="isread"
-          v-if="item.isread == 0 && item.from_userid != $store.state.userid"
-        ></div> -->
         <div
           class="isread"
-          v-if="item.isread == 0 && item.from_userid != 16"
+          v-if="item.isread == 0 && item.from_userid != $store.state.userid"
         ></div>
+        <!-- <div
+          class="isread"
+          v-if="item.isread == 0 && item.from_userid != 16"
+        ></div> -->
       </div>
     </div>
   </div>
@@ -97,8 +97,8 @@ export default {
     editdata(res) {
       var that = this;
       that.userlist = res;
-      // var id = this.$store.state.userid;
-      var id = 16;
+      var id = this.$store.state.userid;
+      // var id = 16;
       res.forEach((item) => {
         that.firstList.forEach((ite) => {
           if (item.id == ite.from_userid && id == ite.to_userid) {
@@ -140,11 +140,11 @@ export default {
       this.newlists = this.firstList;
     },
     getlist() {
-      // var id = this.$store.state.userid;
-      var id = 16;
+      var id = this.$store.state.userid;
+      // var id = 16;
       return new Promise((resolve, rehect) => {
         axios({
-          url: "http://www.test.com:8083/message.php",
+          url: this.baseUrl + "message.php",
           method: "get",
           params: {
             userid: id,
@@ -165,7 +165,7 @@ export default {
             lists.forEach((item) => {
               if (item != id) {
                 axios({
-                  url: "http://www.test.com:8083/getUserinfo.php",
+                  url: this.baseUrl + "getUserinfo.php",
                   method: "get",
                   params: {
                     userid: item,
@@ -189,7 +189,7 @@ export default {
     chooseuser(item) {
       console.log(item);
       axios({
-        url: "http://www.test.com:8083/updateMessage.php",
+        url: this.baseUrl + "updateMessage.php",
         method: "post",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         data: {
@@ -200,11 +200,11 @@ export default {
           this.editdata(res);
         });
       });
-      // if (item.from_userid != this.$store.state.userid) {
-      if (item.from_userid != 16) {
+      if (item.from_userid != this.$store.state.userid) {
+      // if (item.from_userid != 16) {
         this.$store.commit("SET_TOUSER", item.from_userid);
-        // } else if (item.to_userid != this.$store.state.userid) {
-      } else if (item.to_userid != 16) {
+        } else if (item.to_userid != this.$store.state.userid) {
+      // } else if (item.to_userid != 16) {
         this.$store.commit("SET_TOUSER", item.to_userid);
       }
       console.log(this.$store.state.contectuser);

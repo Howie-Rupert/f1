@@ -31,6 +31,10 @@ const routes = [
   {
     path:'/Shenqing',
     component:() => import('../views/ShenQing.vue')
+  },
+  {
+    path:'/MyInfo',
+    component:() => import('../views/MyInfo.vue')
   }
 ]
 

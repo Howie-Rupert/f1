@@ -51,7 +51,7 @@ export default {
   },
   components: {},
   created() {
-    this.uploadUrl = `http://www.test.com:8083/fileupload.php`; // 上传接口url地址
+    this.uploadUrl = this.baseUrl + `fileupload.php`; // 上传接口url地址
     if (this.value) {
       this.mediaList = this.value;
     }
@@ -79,6 +79,7 @@ export default {
             name: res.newname,
           },
         ]);
+        this.mediaList = [];
       } else {
       }
     },

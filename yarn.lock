@@ -2248,7 +2248,7 @@
 
 "ajv-formats@^2.1.1":
   "integrity" "sha512-Wx0Kx52hxE7C18hkMEggYlEifqWZtYaRgouJor+WMdPnQyEK13vgEWyVNup7SoeeoLMsr4kf5h6dOW11I15MUA=="
-  "resolved" "https://registry.npmmirror.com/ajv-formats/-/ajv-formats-2.1.1.tgz"
+  "resolved" "https://registry.npmjs.org/ajv-formats/-/ajv-formats-2.1.1.tgz"
   "version" "2.1.1"
   dependencies:
     "ajv" "^8.0.0"
@@ -2275,7 +2275,17 @@
     "json-schema-traverse" "^0.4.1"
     "uri-js" "^4.2.2"
 
-"ajv@^8.0.0", "ajv@^8.8.0", "ajv@^8.8.2":
+"ajv@^8.0.0":
+  "integrity" "sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA=="
+  "resolved" "https://registry.npmjs.org/ajv/-/ajv-8.12.0.tgz"
+  "version" "8.12.0"
+  dependencies:
+    "fast-deep-equal" "^3.1.1"
+    "json-schema-traverse" "^1.0.0"
+    "require-from-string" "^2.0.2"
+    "uri-js" "^4.2.2"
+
+"ajv@^8.0.1":
   "integrity" "sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA=="
   "resolved" "https://registry.npmmirror.com/ajv/-/ajv-8.12.0.tgz"
   "version" "8.12.0"
@@ -2285,7 +2295,17 @@
     "require-from-string" "^2.0.2"
     "uri-js" "^4.2.2"
 
-"ajv@^8.0.1":
+"ajv@^8.6.3":
+  "integrity" "sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA=="
+  "resolved" "https://registry.npmjs.org/ajv/-/ajv-8.12.0.tgz"
+  "version" "8.12.0"
+  dependencies:
+    "fast-deep-equal" "^3.1.1"
+    "json-schema-traverse" "^1.0.0"
+    "require-from-string" "^2.0.2"
+    "uri-js" "^4.2.2"
+
+"ajv@^8.8.0", "ajv@^8.8.2":
   "integrity" "sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA=="
   "resolved" "https://registry.npmmirror.com/ajv/-/ajv-8.12.0.tgz"
   "version" "8.12.0"
@@ -2608,6 +2628,11 @@
   "integrity" "sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg=="
   "resolved" "https://mirrors.huaweicloud.com/repository/npm/atob/-/atob-2.1.2.tgz"
   "version" "2.1.2"
+
+"atomically@^1.7.0":
+  "integrity" "sha512-Xcz9l0z7y9yQ9rdDaxlmaI4uJHf/T8g9hOEzJcsEqX2SjCj4J20uK7+ldkDHMbpJDK76wF7xEIgxc/vSlsfw5w=="
+  "resolved" "https://registry.npmjs.org/atomically/-/atomically-1.7.0.tgz"
+  "version" "1.7.0"
 
 "autoprefixer@^10.2.4":
   "integrity" "sha512-49vKpMqcZYsJjwotvt4+h/BCjJVnhGwcLpDt5xkcaOG3eLrG/HUYLagrihYsQ+qrIBgIzX1Rw7a6L8I/ZA1Atg=="
@@ -3641,6 +3666,22 @@
     "readable-stream" "^2.2.2"
     "typedarray" "^0.0.6"
 
+"conf@^10.2.0":
+  "integrity" "sha512-8fLl9F04EJqjSqH+QjITQfJF8BrOVaYr1jewVgSRAEWePfxT0sku4w2hrGQ60BC/TNLGQ2pgxNlTbWQmMPFvXg=="
+  "resolved" "https://registry.npmjs.org/conf/-/conf-10.2.0.tgz"
+  "version" "10.2.0"
+  dependencies:
+    "ajv" "^8.6.3"
+    "ajv-formats" "^2.1.1"
+    "atomically" "^1.7.0"
+    "debounce-fn" "^4.0.0"
+    "dot-prop" "^6.0.1"
+    "env-paths" "^2.2.1"
+    "json-schema-typed" "^7.0.3"
+    "onetime" "^5.1.2"
+    "pkg-up" "^3.1.0"
+    "semver" "^7.3.5"
+
 "config-chain@^1.1.11":
   "integrity" "sha512-qj+f8APARXHrM0hraqXYb2/bOVSV4PvJQlNZ/DVj0QrmNM2q2euizkeuVckQ57J+W0mRH6Hvi+k50M4Jul2VRQ=="
   "resolved" "https://mirrors.huaweicloud.com/repository/npm/config-chain/-/config-chain-1.1.13.tgz"
@@ -4031,6 +4072,13 @@
   "resolved" "https://registry.npmmirror.com/de-indent/-/de-indent-1.0.2.tgz"
   "version" "1.0.2"
 
+"debounce-fn@^4.0.0":
+  "integrity" "sha512-8pYCQiL9Xdcg0UPSD3d+0KMlOjp+KGU5EPwYddgzQ7DATsg4fuUDjQtsYLmWjnk2obnNHgV3vE2Y4jejSOJVBQ=="
+  "resolved" "https://registry.npmjs.org/debounce-fn/-/debounce-fn-4.0.0.tgz"
+  "version" "4.0.0"
+  dependencies:
+    "mimic-fn" "^3.0.0"
+
 "debug@^2.2.0":
   "integrity" "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA=="
   "resolved" "https://mirrors.huaweicloud.com/repository/npm/debug/-/debug-2.6.9.tgz"
@@ -4340,6 +4388,13 @@
   dependencies:
     "is-obj" "^2.0.0"
 
+"dot-prop@^6.0.1":
+  "integrity" "sha512-tE7ztYzXHIeyvc7N+hR3oi7FIbf/NIjVP9hmAt3yMXzrQ072/fpjGLx2GxNxGxUl5V73MEqYzioOMoVhGMJ5cA=="
+  "resolved" "https://registry.npmjs.org/dot-prop/-/dot-prop-6.0.1.tgz"
+  "version" "6.0.1"
+  dependencies:
+    "is-obj" "^2.0.0"
+
 "dotenv-expand@^5.1.0":
   "integrity" "sha512-YXQl1DSa4/PQyRfgrv6aoNjhasp/p4qs9FjJ4q4cQk+8m4r6k4ZSiEyytKG8f8W9gi8WsQtIObNmKd+tMzNTmA=="
   "resolved" "https://registry.npmmirror.com/dotenv-expand/-/dotenv-expand-5.1.0.tgz"
@@ -4438,6 +4493,11 @@
     "tslib" "^2.1.0"
     "unzip-crx-3" "^0.2.0"
 
+"electron-localstorage@^1.0.5":
+  "integrity" "sha512-wmEcjZdyFI1YFlCtU8g8JP0FJ02WuIrUyNwxu0Mn7Be5YiFowuejeudgWMTaa2zd2qJlQCLmA3bj8pydIoti7Q=="
+  "resolved" "https://registry.npmjs.org/electron-localstorage/-/electron-localstorage-1.0.5.tgz"
+  "version" "1.0.5"
+
 "electron-osx-sign@^0.5.0":
   "integrity" "sha512-icoRLHzFz/qxzDh/N4Pi2z4yVHurlsCAYQvsCSG7fCedJ4UJXBS6PoQyGH71IfcqKupcKeK7HX/NkyfG+v6vlQ=="
   "resolved" "https://mirrors.huaweicloud.com/repository/npm/electron-osx-sign/-/electron-osx-sign-0.5.0.tgz"
@@ -4462,6 +4522,14 @@
     "fs-extra" "^10.0.0"
     "lazy-val" "^1.0.5"
     "mime" "^2.5.2"
+
+"electron-store@^8.1.0":
+  "integrity" "sha512-2clHg/juMjOH0GT9cQ6qtmIvK183B39ZXR0bUoPwKwYHJsEF3quqyDzMFUAu+0OP8ijmN2CbPRAelhNbWUbzwA=="
+  "resolved" "https://registry.npmjs.org/electron-store/-/electron-store-8.1.0.tgz"
+  "version" "8.1.0"
+  dependencies:
+    "conf" "^10.2.0"
+    "type-fest" "^2.17.0"
 
 "electron-to-chromium@^1.4.251":
   "integrity" "sha512-M8WEXFuKXMYMVr45fo8mq0wUrrJHheiKZf6BArTKk9ZBYCKJEOU5H8cdWgDT+qCVZf7Na4lVUaZsA+h6uA9+PA=="
@@ -4617,7 +4685,7 @@
   "resolved" "https://registry.npmmirror.com/entities/-/entities-2.2.0.tgz"
   "version" "2.2.0"
 
-"env-paths@^2.2.0":
+"env-paths@^2.2.0", "env-paths@^2.2.1":
   "integrity" "sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A=="
   "resolved" "https://mirrors.huaweicloud.com/repository/npm/env-paths/-/env-paths-2.2.1.tgz"
   "version" "2.2.1"
@@ -6515,6 +6583,11 @@
   "resolved" "https://registry.npmmirror.com/json-schema-traverse/-/json-schema-traverse-1.0.0.tgz"
   "version" "1.0.0"
 
+"json-schema-typed@^7.0.3":
+  "integrity" "sha512-7DE8mpG+/fVw+dTpjbxnx47TaMnDfOI1jwft9g1VybltZCduyRQPJPvc+zzKY9WPHxhPWczyFuYa6I8Mw4iU5A=="
+  "resolved" "https://registry.npmjs.org/json-schema-typed/-/json-schema-typed-7.0.3.tgz"
+  "version" "7.0.3"
+
 "json-schema@0.4.0":
   "integrity" "sha512-es94M3nTIfsEPisRafak+HDLfHXnKBhV3vU5eqPcS3flIWqcxJWgXHXiey3YrpaNsanY5ei1VoYEbOzijuq9BA=="
   "resolved" "https://mirrors.huaweicloud.com/repository/npm/json-schema/-/json-schema-0.4.0.tgz"
@@ -7137,6 +7210,11 @@
   "integrity" "sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg=="
   "resolved" "https://registry.npmmirror.com/mimic-fn/-/mimic-fn-2.1.0.tgz"
   "version" "2.1.0"
+
+"mimic-fn@^3.0.0":
+  "integrity" "sha512-Ysbi9uYW9hFyfrThdDEQuykN4Ey6BuwPD2kpI5ES/nFTDn/98yxYNLZJcgUAKPT/mcrLLKaGzJR9YVxJrIdASQ=="
+  "resolved" "https://registry.npmjs.org/mimic-fn/-/mimic-fn-3.1.0.tgz"
+  "version" "3.1.0"
 
 "mimic-response@^1.0.0", "mimic-response@^1.0.1":
   "integrity" "sha512-j5EctnkH7amfV/q5Hgmoal1g2QHFJRraOtmx0JpIqkxhBhI/lJSl1nMpQ45hVarwNETOoWEimndZ4QK0RHxuxQ=="
@@ -8136,6 +8214,13 @@
   "version" "4.2.0"
   dependencies:
     "find-up" "^4.0.0"
+
+"pkg-up@^3.1.0":
+  "integrity" "sha512-nDywThFk1i4BQK4twPQ6TA4RT8bDY96yeuCVBWL3ePARCiEKDRSrNGbFIgUJpLp+XeIR65v8ra7WuJOFUBtkMA=="
+  "resolved" "https://registry.npmjs.org/pkg-up/-/pkg-up-3.1.0.tgz"
+  "version" "3.1.0"
+  dependencies:
+    "find-up" "^3.0.0"
 
 "plist@^3.0.1":
   "integrity" "sha512-WiIVYyrp8TD4w8yCvyeIr+lkmrGRd5u0VbRnU+tP/aRLxP/YadJUYOMZJ/6hIa3oUyVCsycXvtNRgd5XBJIbiA=="
@@ -10454,6 +10539,11 @@
   "resolved" "https://registry.npmmirror.com/type-fest/-/type-fest-0.8.1.tgz"
   "version" "0.8.1"
 
+"type-fest@^2.17.0":
+  "integrity" "sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA=="
+  "resolved" "https://registry.npmjs.org/type-fest/-/type-fest-2.19.0.tgz"
+  "version" "2.19.0"
+
 "type-is@~1.6.18":
   "integrity" "sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g=="
   "resolved" "https://registry.npmmirror.com/type-is/-/type-is-1.6.18.tgz"
@@ -10696,8 +10786,13 @@
 
 "uuid@^8.3.2":
   "integrity" "sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg=="
-  "resolved" "https://registry.npmmirror.com/uuid/-/uuid-8.3.2.tgz"
+  "resolved" "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz"
   "version" "8.3.2"
+
+"uuid@^9.0.0":
+  "integrity" "sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg=="
+  "resolved" "https://registry.npmjs.org/uuid/-/uuid-9.0.0.tgz"
+  "version" "9.0.0"
 
 "v-emoji-picker@^2.3.3":
   "integrity" "sha512-GLuBowVCwKjGRVQ+DJvP6SVFhLIlyvQTBgwlrBuwPX7wt7xi+fdWxmFtyJDBEp/2/xI1aS6Y2lXvse9Cf2vIzA=="
@@ -10782,6 +10877,11 @@
     "webpack-chain" "^6.0.0"
     "webpack-merge" "^4.2.2"
     "yargs" "^15.3.1"
+
+"vue-cropper@^0.5.8":
+  "integrity" "sha512-Xgi/aLQCcNCiBTUdovy/i4LWx0G7fQnAENBpDWA3J4i87Zlk9DJRksXrClsQ6nnaFRfQVkMimij5GEvAMaXdYw=="
+  "resolved" "https://registry.npmjs.org/vue-cropper/-/vue-cropper-0.5.8.tgz"
+  "version" "0.5.8"
 
 "vue-eslint-parser@^8.0.1":
   "integrity" "sha512-dzHGG3+sYwSf6zFBa0Gi9ZDshD7+ad14DGOdTLjruRVgZXe2J+DcZ9iUhyR48z5g1PqRa20yt3Njna/veLJL/g=="

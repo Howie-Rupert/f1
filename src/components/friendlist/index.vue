@@ -30,7 +30,7 @@ export default {
       // var id = 16;
       return new Promise((resolve, rehect) => {
         axios({
-          url: "http://www.test.com:8083/friendlist.php",
+          url: this.baseUrl + "friendlist.php",
           method: "get",
           params: {
             userid: id,
@@ -50,7 +50,7 @@ export default {
             var arr = [];
             lists.forEach((item) => {
               axios({
-                url: "http://www.test.com:8083/getUserinfo.php",
+                url: this.baseUrl + "getUserinfo.php",
                 method: "get",
                 params: {
                   userid: item,
@@ -64,7 +64,7 @@ export default {
             this.friendlist = arr;
             setTimeout(() => {
               resolve(arr);
-            }, 200);
+            }, 1000);
           }
         });
       });
@@ -125,7 +125,9 @@ export default {
     var that = this;
     this.getfriends().then((res) => {
       console.log("初始化", res);
-      that.getFirst(res);
+      setTimeout(() => {
+        that.getFirst(res);
+      }, 200);
     });
   },
 };

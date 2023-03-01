@@ -33,21 +33,29 @@
 
 <script>
 import axios from "axios";
+import { ipcRenderer } from "electron";
+
 export default {
   data() {
     return {
       lists: [],
+      userId: "",
     };
   },
   mounted() {
-    this.getlists();
+    var that = this;
+    ipcRenderer.on("getUserid", function (event, data) {
+      console.log("ipc", data);
+      that.userId = data;
+      that.getlists();
+    });
   },
   methods: {
     getlists() {
-      // var userId = this.$store.state.userid
-      var userId = 16;
+      var userId = this.userId;
+      // var userId = 16;
       axios({
-        url: "http://www.test.com:8083/sqlist.php",
+        url: this.baseUrl + "sqlist.php",
         method: "get",
         params: {
           userid: userId,
@@ -61,7 +69,7 @@ export default {
     },
     agree(id) {
       axios({
-        url: "http://www.test.com:8083/editfriend.php",
+        url: this.baseUrl + "editfriend.php",
         method: "get",
         params: {
           id: id,
@@ -124,7 +132,7 @@ export default {
   display: flex;
   margin-right: 50px;
   align-items: center;
-  width:15%;
+  width: 15%;
 }
 .control {
   display: flex;

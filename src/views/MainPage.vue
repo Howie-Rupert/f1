@@ -6,8 +6,18 @@
     </el-aside>
     <el-container>
       <el-header class="el_header"> <drag /> </el-header>
-
-      <el-main class="el_main"> <messagebody /> </el-main>
+      <messagebody v-show="0"/>
+      <el-main
+        v-if="
+          $store.state.contectuser != '006' && $store.state.contectuser != ''
+        "
+        class="el_main"
+      >
+        <messagebody />
+      </el-main>
+      <el-main v-else class="el_main">
+        <div class="init"></div>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -50,5 +60,9 @@ export default {
   height: 1px;
   /* border-top: 1px solid #d6d6d6; */
 }
-
+.init {
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+}
 </style>

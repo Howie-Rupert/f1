@@ -112,11 +112,12 @@ export default {
       } else if (this.userName != "" && this.userPass != "") {
         this.axios({
           // url: "http://150.158.84.153/account.php",
-          url:'http://www.test.com:8083/account.php',
+          url:this.baseUrl + 'account.php',
           method: "post",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           data: {
             username: this.userName,
+            nickname: this.userName,
             userpass: this.userPass,
           },
         }).then((res) => {

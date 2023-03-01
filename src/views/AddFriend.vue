@@ -12,6 +12,7 @@
     <div class="xian"></div>
     <div class="searchRes">
       <div class="searchResTitle">搜索结果</div>
+      <div class="result" v-if="lists.length == 0">未搜索到结果</div>
       <div class="friendlist">
         <div class="userinfo" v-for="item in lists">
           <el-avatar shape="circle" :size="50" :src="item.usericon"></el-avatar>
@@ -27,23 +28,30 @@
 
 <script>
 import axios from "axios";
+import { ipcRenderer } from "electron";
 export default {
   data() {
     return {
       keyword: "",
       lists: [],
       isfriendlist: [],
+      userId: "",
     };
   },
   mounted() {
-    this.myfriend();
+    var that = this;
+    ipcRenderer.on("getUserid", function (event, data) {
+      console.log("ipc", data);
+      that.userId = data;
+      that.myfriend();
+    });
   },
   methods: {
     myfriend() {
-      //   var id = this.$store.state.userid;
-      var id = 16;
+      var id = this.userId;
+      // var id = 16;
       axios({
-        url: "http://www.test.com:8083/friendlist.php",
+        url: this.baseUrl + "friendlist.php",
         method: "get",
         params: {
           userid: id,
@@ -67,20 +75,22 @@ export default {
         };
       }
       axios({
-        url: "http://www.test.com:8083/searchFriend.php",
+        url: this.baseUrl + "searchFriend.php",
         method: "get",
         params,
       }).then((res) => {
         if (res.data.length != 0) {
           res.data.forEach((item) => {
-            if (item.id == 16) {
+            if (item.id == this.userId) {
               res.data.splice(res.data.indexOf(item), 1, "");
             }
             this.isfriendlist.forEach((ite) => {
-              if (item.id != 16) {
+              if (item.id != this.userId) {
                 if (
-                  (item.id == ite.sq_userid && ite.bsq_userid == 16) ||
-                  (item.id == ite.bsq_userid && ite.sq_userid == 16)
+                  (item.id == ite.sq_userid &&
+                    ite.bsq_userid == this.userId) ||
+                  (item.id == ite.bsq_userid &&
+                    ite.sq_userid == this.userId)
                 ) {
                   res.data.splice(res.data.indexOf(item), 1, "");
                 }
@@ -96,10 +106,10 @@ export default {
       });
     },
     addfriend(id) {
-      var userId = this.$store.state.userid;
-      var userId = 16;
+      var userId = this.userId;
+      // var userId = 16;
       axios({
-        url: "http://www.test.com:8083/addfriend.php",
+        url: this.baseUrl + "addfriend.php",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         method: "post",
         data: {
@@ -171,5 +181,10 @@ export default {
   background-color: #24d96f;
   border-radius: 11px;
   cursor: pointer;
+}
+.result {
+  text-align: center;
+  font-size: 12px;
+  color: #cccfd6;
 }
 </style>

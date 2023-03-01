@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     userid: '',
     contectuser: '006',
-    haveMessage:''
+    haveMessage: '',
   },
   getters: {
     contectuser: state => state.contectuser,
@@ -22,7 +22,8 @@ export default new Vuex.Store({
     },
     SET_MESSAGE(state, e) {
       state.haveMessage = e
-    }
+    },
+
   },
   actions: {
   },

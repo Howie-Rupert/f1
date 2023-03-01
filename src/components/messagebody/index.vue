@@ -7,8 +7,8 @@
       <div v-for="(item, index) in message">
         <div class="timestamp">{{ renderMessageDate(item, index) }}</div>
         <div class="message_list">
-          <!-- <div v-if="$store.state.userid == item.from_userid" class="senduser"> -->
-          <div v-if="16 == item.from_userid" class="senduser">
+          <div v-if="$store.state.userid == item.from_userid" class="senduser">
+            <!-- <div v-if="16 == item.from_userid" class="senduser"> -->
             <el-avatar
               :size="35"
               :src="currentUserInfo.usericon"
@@ -191,26 +191,31 @@ export default {
       message: [],
       otheruser: "",
       currentUserInfo: "",
-      wsUrl: "ws://127.0.0.1:1234", // ws地址
+      wsUrl: "ws://150.158.84.153/ws", // ws地址
+      // wsUrl: "ws://127.0.0.1:1234", // ws地址
       websock: null, // ws实例
       message: "",
+      timeout: 6000,
+      timeoutObj: "",
+      serverTimeoutObj: "",
     };
   },
   mounted() {
     this.initWebSocket();
     console.log(Date.now());
     axios({
-      url: "http://www.test.com:8083/getUserinfo.php",
+      url: this.baseUrl + "getUserinfo.php",
       method: "get",
       params: {
-        // userid: this.$store.state.userid,
-        userid: 16,
+        userid: this.$store.state.userid,
+        // userid: 16,
       },
     }).then((res) => {
       if (res.data.code == 200) {
         this.currentUserInfo = res.data.data[0];
       }
     });
+    this.otheruser = this.$store.state.contectuser;
     this.getmessagelist();
     this.getUserInfo();
     this.$nextTick(() => {
@@ -234,6 +239,26 @@ export default {
     this.websock.close();
   },
   methods: {
+    reset() {
+      clearTimeout(this.timeoutObj);
+      clearTimeout(this.serverTimeoutObj);
+      return this;
+    },
+    start() {
+      var that = this;
+      this.serverTimeoutObj = setInterval(function () {
+        console.log("websocket", that.websock.readyState === 1);
+        if (that.websock.readyState === 1) {
+          console.log("连接状态，发送消息保持连接");
+          that.websock.send("socket heart"); // 连接成功将消息传给服务端
+          that.reset();
+          that.start(); // 如果获得消息 说明连接正常 重置心跳检测
+        } else {
+          console.log("断开连接， 尝试重连");
+          that.initWebSocket();
+        }
+      }, this.timeout);
+    },
     // 初始化weosocket
     initWebSocket() {
       if (typeof WebSocket === "undefined")
@@ -245,13 +270,15 @@ export default {
       this.websock.onclose = this.websocketclose;
     },
     websocketonopen() {
+      this.reset();
+      this.start(); // 成功建立连接后，重置心跳检测
       // 连接建立之后执行send方法发送数据
       let actions = {
         type: "login",
-        // msg: this.$store.state.userid + "用户进入",
-        // userid: this.$store.state.userid,
-        msg: 16 + "用户进入",
-        userid: 16,
+        msg: this.$store.state.userid + "用户进入",
+        userid: this.$store.state.userid,
+        // msg: 16 + "用户进入",
+        // userid: 16,
       };
       this.websocketsend(JSON.stringify(actions));
     },
@@ -265,6 +292,10 @@ export default {
       console.log("接收的数据", redata);
       this.getmessagelist();
       this.$store.commit("SET_MESSAGE", true);
+      // setTimeout(() => {
+      //   this.reset();
+      //   this.start();
+      // }, 10000);
     },
     websocketsend(Data) {
       // 数据发送
@@ -286,7 +317,7 @@ export default {
     },
     getUserInfo() {
       axios({
-        url: "http://www.test.com:8083/getUserinfo.php",
+        url: this.baseUrl + "getUserinfo.php",
         method: "get",
         params: {
           userid: this.otheruser,
@@ -299,11 +330,11 @@ export default {
       });
     },
     getmessagelist() {
-      // var id = this.$store.state.userid;
-      var id = 16;
+      var id = this.$store.state.userid;
+      // var id = 16;
       console.log("getmessagelist中", this.otheruser);
       axios({
-        url: "http://www.test.com:8083/getAllMessage.php",
+        url: this.baseUrl + "getAllMessage.php",
         method: "get",
         params: {
           userid: id,
@@ -345,19 +376,19 @@ export default {
     //图片
     filelist(index) {
       console.log("父元素", index);
-      // var userId = this.$store.state.userid;
-      var userId = 16;
+      var userId = this.$store.state.userid;
+      // var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 2;
       axios({
-        url: "http://www.test.com:8083/sendmessage.php",
+        url: this.baseUrl + "sendmessage.php",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         method: "post",
         data: {
           userid: userId,
           to_userid: to_userId,
           message_type: messagetype,
-          message: "http://www.test.com:8083/upload/" + index,
+          message: this.baseUrl + "upload/" + index,
         },
       }).then((res) => {
         console.log(res);
@@ -371,19 +402,19 @@ export default {
     //视频
     filelist1(index) {
       console.log("父元素", index);
-      // var userId = this.$store.state.userid;
-      var userId = 16;
+      var userId = this.$store.state.userid;
+      // var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 3;
       axios({
-        url: "http://www.test.com:8083/sendmessage.php",
+        url: this.baseUrl + "sendmessage.php",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         method: "post",
         data: {
           userid: userId,
           to_userid: to_userId,
           message_type: messagetype,
-          message: "http://www.test.com:8083/upload/" + index[0].name,
+          message: this.baseUrl + "upload/" + index[0].name,
         },
       }).then((res) => {
         console.log(res);
@@ -397,19 +428,19 @@ export default {
     //文件
     filelist2(index) {
       console.log("父元素", index);
-      // var userId = this.$store.state.userid;
-      var userId = 16;
+      var userId = this.$store.state.userid;
+      // var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 4;
       axios({
-        url: "http://www.test.com:8083/sendmessage.php",
+        url: this.baseUrl + "sendmessage.php",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         method: "post",
         data: {
           userid: userId,
           to_userid: to_userId,
           message_type: messagetype,
-          message: "http://www.test.com:8083/upload/" + index[0].name,
+          message: this.baseUrl + "upload/" + index[0].name,
           message_name: index[0].name,
         },
       }).then((res) => {
@@ -464,21 +495,29 @@ export default {
     },
     openimg(data, type) {
       if (type == "video") {
+        var options = {
+          type: "video",
+          data: data,
+        };
         localStorage.setItem("type", "video");
       } else if (type == "img") {
+        var options = {
+          type: "img",
+          data: data,
+        };
         localStorage.setItem("type", "img");
       }
       localStorage.setItem("data", data);
-      ipcRenderer.send("newwindow");
+      ipcRenderer.send("newwindow", JSON.stringify(options));
     },
     sendmessage() {
-      // var userId = this.$store.state.userid;
-      var userId = 16;
+      var userId = this.$store.state.userid;
+      // var userId = 16;
       var to_userId = this.otherUserId;
       var message = this.textarea;
       var messagetype = 1;
       axios({
-        url: "http://www.test.com:8083/sendmessage.php",
+        url: this.baseUrl + "sendmessage.php",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         method: "post",
         data: {
@@ -760,7 +799,7 @@ export default {
   padding: 10px;
   background-color: #95ec69;
   border-radius: 5px;
-  z-index: 2;
+  /* z-index: 2; */
   text-align: left;
 }
 .to_message {
@@ -768,7 +807,7 @@ export default {
   height: auto;
   padding: 10px;
   background-color: #fff;
-  z-index: 2;
+  /* z-index: 2; */
   border-radius: 5px;
 }
 

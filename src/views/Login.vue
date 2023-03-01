@@ -74,7 +74,7 @@ export default {
       loading: false,
       msg: "",
       show_err: false,
-      userid:''
+      userid: "",
     };
   },
   mounted() {
@@ -97,7 +97,7 @@ export default {
       } else if (this.userName != "" && this.userPass != "") {
         this.axios({
           // url: "http://150.158.84.153/login.php",
-          url:'http://www.test.com:8083/login.php',
+          url: this.baseUrl + "login.php",
           method: "post",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           data: {
@@ -106,13 +106,13 @@ export default {
           },
         }).then((res) => {
           console.log(res);
-          this.$store.commit('SET_USERID',res.data.userid)
+          this.$store.commit("SET_USERID", res.data.userid);
           if (res.data.code == 200) {
             this.loading = true;
             this.circleUrl = res.data.usericon;
             this.nickname = res.data.nickname;
             this.userid = res.data.userid;
-            window.localStorage.setItem('userid',this.userid)
+            window.localStorage.setItem("userid", this.userid);
             setTimeout(() => {
               this.$router.push("/main");
             }, 3000);

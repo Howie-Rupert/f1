@@ -25,14 +25,21 @@ export default {
     "el-image-viewer": () =>
       import("element-ui/packages/image/src/image-viewer"),
   },
-  mounted() {
-    var data = localStorage.getItem("data");
-    this.type = localStorage.getItem("type");
-    if (this.type == "img") {
-      this.url = [data];
-    } else if (this.type == "video") {
-      this.src = data;
-    }
+  beforeMount() {
+    var that = this;
+    ipcRenderer.on("infomation", function (e, data) {
+      var da1 = JSON.parse(data);
+      console.log(da1);
+      if (da1.type == "img") {
+        that.url = [da1.data];
+        that.type = da1.type;
+        console.log("img", that.url);
+      } else if (da1.type == "video") {
+        that.type = da1.type;
+        that.src = da1.data;
+        console.log("b", that.src);
+      }
+    });
   },
   methods: {},
 };
