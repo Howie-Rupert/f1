@@ -35,6 +35,7 @@
               <img
                 @dragstart.prevent
                 class="pause_btn"
+                @click="openimg(item.message, 'video')"
                 src="../../static/images/pause.png"
                 alt=""
               />

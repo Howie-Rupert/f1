@@ -126,8 +126,12 @@ export default {
             var tM = newdate.getMonth() + 1;
             var tD = newdate.getDate();
             if (Y == tY && M == tM && D == tD) {
-              var H = date.getHours();
-              var m = date.getMinutes();
+              var H =
+                date.getHours() > 10 ? date.getHours() : "0" + date.getHours();
+              var m =
+                date.getMinutes() > 10
+                  ? date.getMinutes()
+                  : "0" + date.getMinutes();
               item.messageTime = H + ":" + m;
             } else {
               item.messageTime = Y + "-" + M + "-" + D;
@@ -201,10 +205,10 @@ export default {
         });
       });
       if (item.from_userid != this.$store.state.userid) {
-      // if (item.from_userid != 16) {
+        // if (item.from_userid != 16) {
         this.$store.commit("SET_TOUSER", item.from_userid);
-        } else if (item.to_userid != this.$store.state.userid) {
-      // } else if (item.to_userid != 16) {
+      } else if (item.to_userid != this.$store.state.userid) {
+        // } else if (item.to_userid != 16) {
         this.$store.commit("SET_TOUSER", item.to_userid);
       }
       console.log(this.$store.state.contectuser);

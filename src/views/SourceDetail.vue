@@ -1,5 +1,6 @@
 <template>
   <div class="demo-image__preview">
+    <drag class="drag" />
     <el-image-viewer
       class="sources"
       v-if="showViewer && type == 'img'"
@@ -11,6 +12,7 @@
 
 <script>
 import { ipcRenderer } from "electron";
+import drag from "../components/dragchild";
 export default {
   data() {
     return {
@@ -22,6 +24,7 @@ export default {
   },
 
   components: {
+    drag,
     "el-image-viewer": () =>
       import("element-ui/packages/image/src/image-viewer"),
   },
@@ -41,7 +44,11 @@ export default {
       }
     });
   },
-  methods: {},
+  methods: {
+    close() {
+      ipcRenderer.send("close");
+    },
+  },
 };
 </script>
 
@@ -53,6 +60,9 @@ export default {
   display: none !important;
 }
 .sources {
-  max-height: calc(100vh - 20px);
+  max-height: 99.4vh;
+}
+.drag {
+  z-index: 2200;
 }
 </style>

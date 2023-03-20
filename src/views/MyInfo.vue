@@ -1,5 +1,6 @@
 <template>
   <div class="userinfobody">
+    <drag class="drag" />
     <el-form
       :model="list"
       :rules="rules"
@@ -114,10 +115,10 @@ import axios from "axios";
 import { VueCropper } from "vue-cropper";
 import { v4 } from "uuid";
 import { ipcRenderer } from "electron";
-
+import drag from "../components/dragchild";
 
 export default {
-  components: { VueCropper },
+  components: { drag, VueCropper },
   data() {
     return {
       userId: "",
@@ -380,6 +381,9 @@ export default {
   border: 1px solid #ccc;
   background-color: #ccc;
   overflow: hidden;
+}
+.demo-ruleForm {
+  margin-top: 60px;
 }
 .cropper {
   width: 260px;
