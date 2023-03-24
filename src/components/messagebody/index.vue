@@ -188,7 +188,9 @@ export default {
       cursorIndex: "",
       currentid: "",
       to_userId: "",
-      otherUserInfo: "",
+      otherUserInfo: {
+        nickname: "",
+      },
       message: [],
       otheruser: "",
       currentUserInfo: "",
@@ -675,7 +677,6 @@ export default {
   padding: 5px 10px;
   text-align: right;
 }
-
 .send-button {
   width: 70px;
   height: 30px;

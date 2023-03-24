@@ -1,5 +1,6 @@
 <template>
   <div class="sqBody">
+    <drag />
     <div class="title">好友验证</div>
     <div class="xian"></div>
     <div class="lists">
@@ -34,7 +35,7 @@
 <script>
 import axios from "axios";
 import { ipcRenderer } from "electron";
-
+import drag from "../components/dragchild";
 export default {
   data() {
     return {
@@ -42,6 +43,7 @@ export default {
       userId: "",
     };
   },
+  components: { drag },
   mounted() {
     var that = this;
     ipcRenderer.on("getUserid", function (event, data) {
@@ -106,6 +108,7 @@ export default {
   align-items: center;
   justify-content: center;
   color: #fff;
+  margin-top: 30px;
 }
 .xian {
   width: 100%;

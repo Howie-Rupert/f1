@@ -1046,6 +1046,11 @@
     "global-agent" "^3.0.0"
     "global-tunnel-ng" "^2.7.1"
 
+"@electron/remote@^2.0.9":
+  "integrity" "sha512-LR0W0ID6WAKHaSs0x5LX9aiG+5pFBNAJL6eQAJfGkCuZPUa6nZz+czZLdlTDETG45CgF/0raSvCtYOYUpr6c+A=="
+  "resolved" "https://registry.npmjs.org/@electron/remote/-/remote-2.0.9.tgz"
+  "version" "2.0.9"
+
 "@electron/universal@1.0.5":
   "integrity" "sha512-zX9O6+jr2NMyAdSkwEUlyltiI4/EBLu2Ls/VD3pUQdi3cAYeYfdQnT2AJJ38HE4QxLccbU13LSpccw1IWlkyag=="
   "resolved" "https://mirrors.huaweicloud.com/repository/npm/@electron/universal/-/universal-1.0.5.tgz"
@@ -4536,7 +4541,7 @@
   "resolved" "https://registry.npmmirror.com/electron-to-chromium/-/electron-to-chromium-1.4.284.tgz"
   "version" "1.4.284"
 
-"electron@^13.0.0":
+"electron@^13.0.0", "electron@>= 13.0.0":
   "integrity" "sha512-Es/sBy85NIuqsO9MW41PUCpwIkeinlTQ7g0ainfnmRAM2rmog3GBxVCaoV5dzEjwTF7TKG1Yr/E7Z3qHmlfWAg=="
   "resolved" "https://mirrors.huaweicloud.com/repository/npm/electron/-/electron-13.6.9.tgz"
   "version" "13.6.9"
@@ -10878,6 +10883,13 @@
     "webpack-merge" "^4.2.2"
     "yargs" "^15.3.1"
 
+"vue-contextmenu@^1.5.11":
+  "integrity" "sha512-H9CdXqiVMRJsUX+ah9k2olywZUiJ+sq6EkCGkLza+DFx0PChIJzZPlsVNPOMgcFInYkigh+QRw2S4Bu7nUXGlA=="
+  "resolved" "https://registry.npmjs.org/vue-contextmenu/-/vue-contextmenu-1.5.11.tgz"
+  "version" "1.5.11"
+  dependencies:
+    "vue" "^2.6.9"
+
 "vue-cropper@^0.5.8":
   "integrity" "sha512-Xgi/aLQCcNCiBTUdovy/i4LWx0G7fQnAENBpDWA3J4i87Zlk9DJRksXrClsQ6nnaFRfQVkMimij5GEvAMaXdYw=="
   "resolved" "https://registry.npmjs.org/vue-cropper/-/vue-cropper-0.5.8.tgz"
@@ -10941,7 +10953,7 @@
   "resolved" "https://registry.npmmirror.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue@*", "vue@^2 || ^3.2.13", "vue@^2.0.0", "vue@^2.5.17", "vue@^2.5.2", "vue@^2.6.11", "vue@^2.6.14":
+"vue@*", "vue@^2 || ^3.2.13", "vue@^2.0.0", "vue@^2.5.17", "vue@^2.5.2", "vue@^2.6.11", "vue@^2.6.14", "vue@^2.6.9":
   "integrity" "sha512-b2qkFyOM0kwqWFuQmgd4o+uHGU7T+2z3T+WQp8UBjADfEv2n4FEMffzBmCKNP0IGzOEEfYjvtcC62xaSKeQDrQ=="
   "resolved" "https://registry.npmmirror.com/vue/-/vue-2.7.14.tgz"
   "version" "2.7.14"

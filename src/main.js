@@ -7,7 +7,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import JwChat from 'jwchat';
 import { Message } from 'element-ui';
-
+import VueContextMenu from 'vue-contextmenu'
+Vue.use(VueContextMenu);
 Vue.use(JwChat)
 Vue.use(ElementUI)
 Vue.prototype.axios = axios

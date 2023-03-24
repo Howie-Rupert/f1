@@ -1,5 +1,6 @@
 <template>
   <div class="friendAdd">
+    <drag />
     <div class="title">搜索用户</div>
     <div class="searchContent">
       <el-input
@@ -29,7 +30,9 @@
 <script>
 import axios from "axios";
 import { ipcRenderer } from "electron";
+import drag from "../components/dragchild";
 export default {
+  components: { drag },
   data() {
     return {
       keyword: "",
@@ -87,10 +90,8 @@ export default {
             this.isfriendlist.forEach((ite) => {
               if (item.id != this.userId) {
                 if (
-                  (item.id == ite.sq_userid &&
-                    ite.bsq_userid == this.userId) ||
-                  (item.id == ite.bsq_userid &&
-                    ite.sq_userid == this.userId)
+                  (item.id == ite.sq_userid && ite.bsq_userid == this.userId) ||
+                  (item.id == ite.bsq_userid && ite.sq_userid == this.userId)
                 ) {
                   res.data.splice(res.data.indexOf(item), 1, "");
                 }
