@@ -911,4 +911,8 @@ export default {
   width: 50px;
   height: 50px;
 }
+.timestamp {
+  color: #7f7f7f;
+  font-size: 12px;
+}
 </style>

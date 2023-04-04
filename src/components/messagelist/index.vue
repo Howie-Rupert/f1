@@ -5,6 +5,7 @@
       v-for="(item, index) in newlists"
       :key="index"
       @click="chooseuser(item)"
+      @contextmenu.prevent="contextMenu($event, item.id)"
     >
       <img class="message_icon" :src="item.usericon" alt="" />
       <div class="name_message">
@@ -28,7 +29,12 @@
       </div>
       <div class="time_read">
         <div class="sendtime">
-          {{ item.messageTime }}
+          {{
+            item.messageTime.indexOf(":") != -1 ||
+            item.messageTime.indexOf("-") != -1
+              ? item.messageTime
+              : ""
+          }}
         </div>
         <div
           class="isread"
@@ -40,33 +46,32 @@
         ></div> -->
       </div>
     </div>
+    <vue-context-menu
+      :contextMenuData="contextMenuData"
+      @deleteData="deleteData"
+    ></vue-context-menu>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import img1 from "../../static/images/userimg.png";
 export default {
   data() {
     return {
-      messagelist: [
-        // {
-        //   img: img1,
-        //   name: "USERNAME",
-        //   message: "message",
-        //   message_type: 0,
-        //   time: "12:17",
-        //   isread: "1",
-        // },
-        // {
-        //   img: img1,
-        //   name: "USERNAME",
-        //   message: "message",
-        //   message_type: 0,
-        //   time: "12:17",
-        //   isread: "1",
-        // },
-      ],
+      contextMenuData: {
+        menuName: "rightMenu",
+        axis: {
+          x: null,
+          y: null,
+        },
+        menulists: [
+          {
+            fnHandler: "deleteData",
+            btnName: "从会话列表移除",
+          },
+        ],
+      },
+      messagelist: [],
       firstList: [],
       myfirst: [],
       otherfirst: [],
@@ -94,6 +99,28 @@ export default {
     });
   },
   methods: {
+    deleteData() {
+      var message_id = localStorage.getItem("closemessageId");
+      var user_id = this.$store.state.userid;
+      axios({
+        url: this.baseUrl + "closemessage.php",
+        method: "get",
+        params: {
+          user_id,
+          message_id,
+        },
+      }).then((response) => {
+        this.getlist().then((res) => {
+          this.editdata(res);
+        });
+      });
+    },
+    contextMenu(e, data) {
+      let x = e.clientX;
+      let y = e.clientY;
+      this.contextMenuData.axis = { x, y };
+      localStorage.setItem("closemessageId", data);
+    },
     editdata(res) {
       var that = this;
       that.userlist = res;
@@ -141,6 +168,23 @@ export default {
       });
       console.log("加入头像昵称", that.firstList);
       this.$store.commit("SET_MESSAGE", false);
+      var lllarr = that.firstList;
+      that.firstList.forEach((item, index) => {
+        if (item.closeby != null) {
+          if (item.closeby.indexOf(id) != -1) {
+            console.log("已经关闭", item);
+            lllarr[index] = null;
+          }
+        }
+      });
+      for (let i = 0; i < lllarr.length; i++) {
+        if (lllarr[i] == null) {
+          lllarr.splice(i, 1);
+          i--;
+        }
+      }
+      that.firstList = lllarr;
+      console.log("删除后", that.firstList);
       this.newlists = this.firstList;
     },
     getlist() {

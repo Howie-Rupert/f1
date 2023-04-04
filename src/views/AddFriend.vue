@@ -66,6 +66,7 @@ export default {
       });
     },
     search() {
+      this.lists = [];
       if (this.keyword == "") return;
       let exp = /^[+-]?\d*(\.\d*)?(e[+-]?\d+)?$/;
       if (exp.test(this.keyword)) {

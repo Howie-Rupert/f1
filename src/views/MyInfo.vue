@@ -26,6 +26,7 @@
           v-model="list.password"
           style="width: 80%"
           type="password"
+          maxlength="16"
         ></el-input>
       </el-form-item>
       <el-form-item>
@@ -350,6 +351,8 @@ export default {
           });
           this.getuser();
           localStorage.setItem("haschange", 1);
+          ipcRenderer.send('message', 'Hello from renderer process!')
+
         }
       });
     },

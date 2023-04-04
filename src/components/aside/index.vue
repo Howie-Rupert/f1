@@ -58,7 +58,7 @@ import fl_l_img from "../../static/images/friendlist_l.png";
 import Message from "../messagelist";
 import Friend from "../friendlist";
 import { mapGetters } from "vuex";
-import { ipcRenderer } from "electron";
+import { ipcRenderer, ipcMain } from "electron";
 export default {
   data() {
     return {
@@ -88,6 +88,10 @@ export default {
         localStorage.setItem("haschange", 0);
       }
     }, 200);
+    ipcRenderer.on("message", (event, userinfo) => {
+      // 执行相关操作
+      this.getthisUserinfo(this.userid);
+    });
   },
   beforeDestroy() {
     clearInterval(this.time);
@@ -163,10 +167,10 @@ export default {
       });
     },
     openFri() {
-      ipcRenderer.send("addfriend",this.$store.state.userid);
+      ipcRenderer.send("addfriend", this.$store.state.userid);
     },
     openShenqing() {
-      ipcRenderer.send("shenqing",this.$store.state.userid);
+      ipcRenderer.send("shenqing", this.$store.state.userid);
     },
     logout() {
       this.$store.commit("SET_USERID", "");
@@ -176,7 +180,7 @@ export default {
       this.$router.push("/");
     },
     openmyview() {
-      ipcRenderer.send("myinfo",this.$store.state.userid);
+      ipcRenderer.send("myinfo", this.$store.state.userid);
     },
   },
 };
