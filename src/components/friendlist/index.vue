@@ -231,5 +231,8 @@ export default {
 }
 .username {
   margin-left: 15px;
+  width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

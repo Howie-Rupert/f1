@@ -9,7 +9,7 @@
         ></el-avatar>
       </div>
       <div class="text_box">
-        <div>{{ userinfo.nickname }}</div>
+        <div class="nickname">{{ userinfo.nickname }}</div>
         <div class="user_sign">{{ userinfo.slog }}</div>
       </div>
     </div>
@@ -39,11 +39,15 @@
         alt=""
       />
       <img
-        @click="openShenqing"
         class="add_fri"
+        @click="showAddmenu = !showAddmenu"
         src="../../static/images/menu.png"
         alt=""
       />
+      <div class="addmenu" v-if="showAddmenu">
+        <div class="addtexts" @click="goutogroup">创建群组</div>
+        <div class="addtexts" @click="openShenqing">好友申请</div>
+      </div>
     </div>
   </div>
 </template>
@@ -74,6 +78,7 @@ export default {
       userinfo: "",
       time: "",
       otheruser: "",
+      showAddmenu: false,
     };
   },
   components: { Message, Friend },
@@ -170,7 +175,13 @@ export default {
       ipcRenderer.send("addfriend", this.$store.state.userid);
     },
     openShenqing() {
+      this.showAddmenu = false;
+
       ipcRenderer.send("shenqing", this.$store.state.userid);
+    },
+    goutogroup() {
+      this.showAddmenu = false;
+      ipcRenderer.send("groupAdd", this.$store.state.userid);
     },
     logout() {
       this.$store.commit("SET_USERID", "");
@@ -247,6 +258,8 @@ export default {
   font-size: 12px;
   margin-top: 5px;
   color: #b8b7b7;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .userimg {
   width: 64px;
@@ -287,5 +300,35 @@ export default {
   height: 30px;
   margin-left: 20px;
   cursor: pointer;
+}
+.addmenu {
+  position: fixed;
+  width: 100px;
+  height: 40px;
+  border: 1px solid #f5f5f5;
+  bottom: 42px;
+  left: 110px;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  justify-content: center;
+  align-items: center;
+}
+.addtexts {
+  font-size: 12px;
+  height: 20px;
+  display: flex;
+  width: calc(100% - 10px);
+  align-items: center;
+  padding-left: 10px;
+  cursor: pointer;
+}
+.addtexts:first-child {
+  border-bottom: 1px solid #f5f5f5;
+}
+.nickname{
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

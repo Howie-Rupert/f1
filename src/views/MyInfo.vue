@@ -13,13 +13,21 @@
         <div class="changeBtn" @click="editAvatar">修改头像</div>
       </el-form-item>
       <el-form-item label="昵称" prop="nickname">
-        <el-input v-model="list.nickname" style="width: 80%"></el-input>
+        <el-input
+          v-model="list.nickname"
+          style="width: 80%"
+          maxlength="15"
+        ></el-input>
       </el-form-item>
       <el-form-item label="手机号" prop="phone">
         <el-input v-model="list.phone" style="width: 80%"></el-input>
       </el-form-item>
       <el-form-item label="签名" prop="slog">
-        <el-input v-model="list.slog" style="width: 80%"></el-input>
+        <el-input
+          v-model="list.slog"
+          style="width: 80%"
+          maxlength="50"
+        ></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
         <el-input
@@ -351,8 +359,7 @@ export default {
           });
           this.getuser();
           localStorage.setItem("haschange", 1);
-          ipcRenderer.send('message', 'Hello from renderer process!')
-
+          ipcRenderer.send("message", "Hello from renderer process!");
         }
       });
     },

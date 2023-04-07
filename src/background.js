@@ -132,8 +132,45 @@ async function createWindow() {
       newWin = null
     })
   })
-  ipcMain.on('shenqing', function (e, arg) {
+  ipcMain.on('groupAdd', function (e, arg) {
+    const winURL = process.env.NODE_ENV === 'development'
+      ? `http://localhost:8080`
+      : `file://${__dirname}/index.html`
+    // http://localhost:8080 可根据自己项目运行端口配置
+    var newWin = ''
+    if (newWin) {
+      newWin.focus()
+      return
+    }
+    newWin = new BrowserWindow({
+      width: 600,
+      height: 400,
+      title: "创建群组",
+      resizable: true,
+      frame: false,
+      fullscreen: false,
+      webPreferences: {
+        // Use pluginOptions.nodeIntegration, leave this alone
+        // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+        nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+        contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+        webSecurity: false
+      }
+    })
 
+    newWin.loadURL(winURL + '#/GroupAdd')
+    newWin.on('ready-to-show', function () {
+      newWin.show()
+    })
+    setTimeout(() => {
+      newWin.webContents.send("getUserid", arg)
+    }, 2000)
+    newWin.on('close', () => {
+      console.log('close')
+      newWin = null
+    })
+  })
+  ipcMain.on('shenqing', function (e, arg) {
     const winURL = process.env.NODE_ENV === 'development'
       ? `http://localhost:8080`
       : `file://${__dirname}/index.html`

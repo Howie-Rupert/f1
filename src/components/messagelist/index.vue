@@ -1,5 +1,6 @@
 <template>
   <div class="messagebody">
+    <div class="search"></div>
     <div
       class="list_content"
       v-for="(item, index) in newlists"
@@ -9,7 +10,7 @@
     >
       <img class="message_icon" :src="item.usericon" alt="" />
       <div class="name_message">
-        <div>
+        <div class="nicknamebox">
           {{ item.nickname }}
         </div>
         <div class="message">
@@ -305,5 +306,10 @@ export default {
   line-height: 20px;
   float: right;
   margin-top: 5px;
+}
+.nicknamebox {
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
