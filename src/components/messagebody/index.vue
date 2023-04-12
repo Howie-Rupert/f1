@@ -1,10 +1,20 @@
 <template>
   <div class="messagebody">
     <div class="bodyname">
-      {{ otherUserInfo.nickname }}
+      <div>{{ otherUserInfo.nickname }}</div>
+      <div class="otherControl" @click="showEdit">
+        <img src="../../static/images/eil.png" alt="" />
+      </div>
     </div>
     <div class="his_message" ref="his_message">
-      <div v-for="(item, index) in message">
+      <div
+        v-for="(item, index) in message"
+        v-if="
+          item.delby != null && item.delby != ''
+            ? Number(item.delby.indexOf($store.state.userid)) === Number(-1)
+            : true
+        "
+      >
         <div class="timestamp">{{ renderMessageDate(item, index) }}</div>
         <div class="message_list">
           <div v-if="$store.state.userid == item.from_userid" class="senduser">
@@ -61,23 +71,51 @@
           <div v-else class="sendeduser">
             <el-avatar
               :size="35"
-              :src="otherUserInfo.usericon"
+              :src="
+                item.from_userIcon != undefined
+                  ? item.from_userIcon
+                  : otherUserInfo.usericon
+              "
               class="to_avatar"
             ></el-avatar>
-            <div class="to_message" v-if="item.message_type == 1">
+            <span class="groupMemName" v-if="item.from_userName != undefined">{{
+              item.from_userName
+            }}</span>
+            <div
+              :class="
+                item.from_userName != undefined ? 'to_message2' : 'to_message'
+              "
+              v-if="item.message_type == 1"
+            >
               <div>
                 {{ item.message }}
               </div>
-              <div class="bottom_arrow_to"></div>
+              <div
+                :class="
+                  item.from_userName != undefined
+                    ? 'bottom_arrow_to2'
+                    : 'bottom_arrow_to'
+                "
+              ></div>
             </div>
-            <div v-if="item.message_type == 2" class="imgmessage">
+            <div
+              v-if="item.message_type == 2"
+              :class="
+                item.from_userName != undefined ? 'imgmessage2' : 'imgmessage'
+              "
+            >
               <img
                 @click="openimg(item.message, 'img')"
                 :src="item.message"
                 alt=""
               />
             </div>
-            <div v-if="item.message_type == 3" class="imgmessage">
+            <div
+              v-if="item.message_type == 3"
+              :class="
+                item.from_userName != undefined ? 'imgmessage2' : 'imgmessage'
+              "
+            >
               <video
                 :src="item.message"
                 @click="openimg(item.message, 'video')"
@@ -95,7 +133,14 @@
               :href="item.message"
               download="download"
             >
-              <div class="content-file" title="点击下载">
+              <div
+                :class="
+                  item.from_userName != undefined
+                    ? 'content-file2'
+                    : 'content-file'
+                "
+                title="点击下载"
+              >
                 <div class="file-info">
                   <span class="file-name">{{ item.messageName }}</span>
                   <!-- <span class="file-size"
@@ -193,6 +238,7 @@ export default {
       },
       message: [],
       otheruser: "",
+      groupId: "",
       currentUserInfo: "",
       wsUrl: "ws://150.158.84.153/ws", // ws地址
       // wsUrl: "ws://127.0.0.1:1234", // ws地址
@@ -201,11 +247,14 @@ export default {
       timeout: 6000,
       timeoutObj: "",
       serverTimeoutObj: "",
+      repeatGroupId: [],
+      isFinish: true,
     };
   },
   mounted() {
     this.initWebSocket();
     console.log(Date.now());
+
     axios({
       url: this.baseUrl + "getUserinfo.php",
       method: "get",
@@ -311,56 +360,165 @@ export default {
     },
     before_ws_send() {
       var to_userId = this.otherUserId;
-      var data = {
-        type: "user",
-        to_userid: to_userId,
-        msg: "1",
-      };
-      this.websocketsend(JSON.stringify(data));
+      if (this.otherUserId.indexOf("!!!") != -1) {
+        var data = {
+          type: "group",
+          to_userid: "",
+          msg: "1",
+        };
+        this.websocketsend(JSON.stringify(data));
+
+        // axios({
+        //   url: this.baseUrl + "groupList.php",
+        //   method: "get",
+        //   params: {
+        //     groupId: this.otherUserId.split("!!!")[1],
+        //   },
+        // }).then((res) => {
+        //   console.log("groupInfo", res.data.data[0]);
+        //   var shouldSendUsers = res.data.data[0].memberUser.split(";");
+        //   shouldSendUsers.forEach((item) => {
+        //     if (item != "") {
+        //       var data = {
+        //         type: "user",
+        //         to_userid: item,
+        //         msg: "1",
+        //       };
+        //       if (this.isFinish == true) {
+        //         this.isFinish = false;
+        //         this.websocketsend(JSON.stringify(data));
+        //         console.log("群发websocket", item);
+        //       }
+        //     }
+        //   });
+        // });
+      } else {
+        var data = {
+          type: "user",
+          to_userid: to_userId,
+          msg: "1",
+        };
+        this.websocketsend(JSON.stringify(data));
+      }
     },
     getUserInfo() {
-      axios({
-        url: this.baseUrl + "getUserinfo.php",
-        method: "get",
-        params: {
-          userid: this.otheruser,
-        },
-      }).then((res) => {
-        console.log("userinfo", res);
-        if (res.data.code == 200) {
-          this.otherUserInfo = res.data.data[0];
-        }
+      if (this.contectuser.indexOf("!!!") == -1) {
+        axios({
+          url: this.baseUrl + "getUserinfo.php",
+          method: "get",
+          params: {
+            userid: this.otheruser,
+          },
+        }).then((res) => {
+          console.log("userinfo", res);
+          if (res.data.code == 200) {
+            this.otherUserInfo = res.data.data[0];
+          }
+        });
+      } else {
+        axios({
+          url: this.baseUrl + "groupList.php",
+          method: "get",
+          params: {
+            groupId: this.contectuser.split("!!!")[1],
+          },
+        }).then((res) => {
+          console.log("groupInfo", res);
+          if (res.data.code == 200) {
+            res.data.data[0].nickname = res.data.data[0].groupName;
+            res.data.data[0].usericon = res.data.data[0].groupicon;
+            this.otherUserInfo = res.data.data[0];
+          }
+        });
+      }
+    },
+    getGroupInfo(id) {
+      // var isrepeat = false;
+      // if (this.repeatGroupId.indexOf(id) != -1) {
+      //   isrepeat = true;
+      // } else {
+      //   this.repeatGroupId.push(id);
+      // }
+      return new Promise((resolve, reject) => {
+        // if (isrepeat) {
+        //   resolve(this.groupMemberInfo);
+        // } else {
+        axios({
+          url: this.baseUrl + "returnGroupM.php",
+          method: "get",
+          params: {
+            groupId: id,
+          },
+        }).then((res) => {
+          if (res) {
+            var arr = res.data.data;
+            this.groupMemberInfo = arr;
+            console.log("群成员头像", arr);
+            resolve(arr);
+          } else {
+            resolve(this.groupMemberInfo);
+          }
+        });
+        // }
       });
     },
     getmessagelist() {
       var id = this.$store.state.userid;
       // var id = 16;
-      console.log("getmessagelist中", this.otheruser);
-      axios({
-        url: this.baseUrl + "getAllMessage.php",
-        method: "get",
-        params: {
-          userid: id,
-        },
-      }).then((res) => {
-        var message = [];
-        console.log("gusss", res);
-        if (res.data.code == 200) {
-          res.data.data.forEach((item) => {
-            if (
-              (item.from_userid == id && item.to_userid == this.otheruser) ||
-              (item.from_userid == this.otheruser && item.to_userid == id)
-            ) {
-              message.push(item);
-            }
-          });
-          this.message = message;
-          // 让滚动条始终在最底部
-          this.$nextTick(() => {
-            this.$refs.his_message.scrollTop =
-              this.$refs.his_message.scrollHeight;
-          });
-        }
+      console.log("getmessagelist中", this.otheruser, this.groupId);
+      this.getGroupInfo(this.otheruser.split("!!!")[1]).then((ress) => {
+        axios({
+          url: this.baseUrl + "getAllMessage.php",
+          method: "get",
+          params: {
+            userid: id,
+          },
+        }).then((res) => {
+          var message = [];
+          if (res.data.code == 200) {
+            res.data.data.forEach((item) => {
+              if (item.to_userid == 0) {
+                if (item.groupId == this.otheruser.split("!!!")[1]) {
+                  // this.getGroupInfo(item.groupId).then((res) => {
+                  //   console.log("群组消息Promise", res);
+                  //   if (res != undefined) {
+                  //     res.forEach((ite) => {
+                  //       if (ite.id == item.from_userid) {
+                  //         item.from_userName = ite.nickname;
+                  //         item.from_userIcon = ite.usericon;
+                  //       }
+                  //     });
+                  //     message.push(item);
+                  //   }
+                  // });
+                  ress.forEach((ite) => {
+                    if (ite.id == item.from_userid) {
+                      item.from_userName = ite.nickname;
+                      item.from_userIcon = ite.usericon;
+                    }
+                  });
+                  message.push(item);
+                }
+              } else {
+                if (
+                  (item.from_userid == id &&
+                    item.to_userid == this.otheruser) ||
+                  (item.from_userid == this.otheruser && item.to_userid == id)
+                ) {
+                  message.push(item);
+                }
+              }
+            });
+            this.message = message;
+
+            console.log("gusss", this.message);
+            // 让滚动条始终在最底部
+            this.$nextTick(() => {
+              this.$refs.his_message.scrollTop =
+                this.$refs.his_message.scrollHeight;
+            });
+          }
+        });
       });
     },
     formatDate,
@@ -383,16 +541,26 @@ export default {
       // var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 2;
-      axios({
-        url: this.baseUrl + "sendmessage.php",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        method: "post",
-        data: {
+      if (to_userId.indexOf("!!!") != -1) {
+        var data = {
+          userid: userId,
+          groupId: to_userId.split("!!!")[1],
+          message_type: messagetype,
+          message: this.baseUrl + "upload/" + index,
+        };
+      } else {
+        var data = {
           userid: userId,
           to_userid: to_userId,
           message_type: messagetype,
           message: this.baseUrl + "upload/" + index,
-        },
+        };
+      }
+      axios({
+        url: this.baseUrl + "sendmessage.php",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "post",
+        data,
       }).then((res) => {
         console.log(res);
         if (res.data.code == 200) {
@@ -405,20 +573,31 @@ export default {
     //视频
     filelist1(index) {
       console.log("父元素", index);
+
       var userId = this.$store.state.userid;
       // var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 3;
-      axios({
-        url: this.baseUrl + "sendmessage.php",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        method: "post",
-        data: {
+      if (to_userId.indexOf("!!!") != -1) {
+        var data = {
+          userid: userId,
+          groupId: to_userId.split("!!!")[1],
+          message_type: messagetype,
+          message: this.baseUrl + "upload/" + index[0].name,
+        };
+      } else {
+        var data = {
           userid: userId,
           to_userid: to_userId,
           message_type: messagetype,
           message: this.baseUrl + "upload/" + index[0].name,
-        },
+        };
+      }
+      axios({
+        url: this.baseUrl + "sendmessage.php",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "post",
+        data,
       }).then((res) => {
         console.log(res);
         if (res.data.code == 200) {
@@ -435,17 +614,28 @@ export default {
       // var userId = 16;
       var to_userId = this.otherUserId;
       var messagetype = 4;
-      axios({
-        url: this.baseUrl + "sendmessage.php",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        method: "post",
-        data: {
+      if (to_userId.indexOf("!!!") != -1) {
+        var data = {
+          userid: userId,
+          groupId: to_userId.split("!!!")[1],
+          message_type: messagetype,
+          message: this.baseUrl + "upload/" + index[0].name,
+          message_name: index[0].name,
+        };
+      } else {
+        var data = {
           userid: userId,
           to_userid: to_userId,
           message_type: messagetype,
           message: this.baseUrl + "upload/" + index[0].name,
           message_name: index[0].name,
-        },
+        };
+      }
+      axios({
+        url: this.baseUrl + "sendmessage.php",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "post",
+        data,
       }).then((res) => {
         console.log(res);
         if (res.data.code == 200) {
@@ -519,16 +709,26 @@ export default {
       var to_userId = this.otherUserId;
       var message = this.textarea;
       var messagetype = 1;
+      if (to_userId.indexOf("!!!") != -1) {
+        var data = {
+          userid: userId,
+          groupId: to_userId.split("!!!")[1],
+          message_type: messagetype,
+          message,
+        };
+      } else {
+        var data = {
+          userid: userId,
+          to_userid: to_userId,
+          message_type: messagetype,
+          message,
+        };
+      }
       axios({
         url: this.baseUrl + "sendmessage.php",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         method: "post",
-        data: {
-          userid: userId,
-          to_userid: to_userId,
-          message_type: messagetype,
-          message: message,
-        },
+        data,
       }).then((res) => {
         console.log(res);
         if (res.data.code == 200) {
@@ -537,6 +737,13 @@ export default {
           this.before_ws_send();
         }
       });
+    },
+    showEdit() {
+      if (this.otherUserId.indexOf("!!!") != -1) {
+        console.log("修改群");
+      } else {
+        console.log("修改个人");
+      }
     },
   },
 };
@@ -553,9 +760,24 @@ export default {
   height: 40px;
   text-align: left;
   padding-left: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   line-height: 40px;
   /* background-color: #eee; */
   border-bottom: 1px solid #d6d6d6;
+}
+.otherControl {
+  width: 20px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+  cursor: pointer;
+}
+.otherControl > img {
+  width: 20px;
 }
 .his_message {
   height: calc(100% - 200px);
@@ -812,7 +1034,15 @@ export default {
   /* z-index: 2; */
   border-radius: 5px;
 }
-
+.to_message2 {
+  width: auto;
+  height: auto;
+  padding: 10px;
+  background-color: #fff;
+  /* z-index: 2; */
+  border-radius: 5px;
+  margin-top: 12px;
+}
 .bottom_arrow_send {
   position: absolute;
   right: 45px;
@@ -827,6 +1057,16 @@ export default {
   position: absolute;
   left: 55px;
   top: 8px;
+  width: 0.75rem;
+  height: 0.75rem;
+  transform: translate(-50%, 50%) rotate(45deg);
+  background-color: #fff;
+  z-index: 1;
+}
+.bottom_arrow_to2 {
+  position: absolute;
+  left: 55px;
+  top: 19px;
   width: 0.75rem;
   height: 0.75rem;
   transform: translate(-50%, 50%) rotate(45deg);
@@ -862,6 +1102,18 @@ export default {
   display: flex;
   position: relative;
 }
+.imgmessage2 {
+  display: flex;
+  position: relative;
+  margin-top: 15px;
+}
+
+.imgmessage2 > img {
+  max-width: 200px;
+}
+.imgmessage2 > video {
+  max-width: 200px;
+}
 .pause_btn {
   position: absolute;
   width: 50px;
@@ -886,6 +1138,23 @@ export default {
 }
 
 .content-file:hover {
+  background: #f1f1f1;
+}
+.content-file2 {
+  width: 240px;
+  height: 65px;
+  font-size: 15px;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.content-file2:hover {
   background: #f1f1f1;
 }
 .file-info {
@@ -913,6 +1182,12 @@ export default {
 }
 .timestamp {
   color: #7f7f7f;
+  font-size: 12px;
+}
+.groupMemName {
+  position: absolute;
+  left: 55px;
+  top: -5px;
   font-size: 12px;
 }
 </style>

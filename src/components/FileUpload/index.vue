@@ -5,9 +5,9 @@
       :before-upload="beforeAvatarUpload"
       :file-list="mediaList"
       :on-success="handleSuccess"
-      :on-exceed="exceedTips"
-      :limit="1"
       :show-file-list="false"
+      :on-exceed="exceedTips"
+      :limit="999999999"
       :on-remove="handleRemove"
     >
       <i class="iconfont icon-wj-wjj" title="文件"></i>

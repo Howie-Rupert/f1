@@ -116,6 +116,11 @@
         <el-button @click="editAvatarDialog = false">取 消</el-button>
       </span>
     </el-dialog>
+    <div class="big_block" v-show="show_err" @click="show_err = false">
+      <div class="dialog">
+        {{ msg }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -132,6 +137,7 @@ export default {
     return {
       userId: "",
       list: {},
+      list2: {},
       rules: {},
       editAvatarDialog: false,
       previews: {},
@@ -149,6 +155,8 @@ export default {
         autoCropHeight: 150,
         fixedBox: true, // 截图框固定大小
       },
+      show_err: false,
+      msg: "",
     };
   },
   mounted() {
@@ -175,6 +183,7 @@ export default {
         console.log(res);
         if (res.data.code == 200) {
           this.list = res.data.data[0];
+          this.list2 = JSON.parse(JSON.stringify(res.data.data[0]));
         }
       });
     },
@@ -208,7 +217,6 @@ export default {
           var pic = new Image();
           pic.src = this.avatarURL;
           var that = this;
-
           pic.onload = function () {
             var canvas = document.createElement("canvas");
             canvas.width = pic.width;
@@ -338,30 +346,56 @@ export default {
     },
 
     edituserinfo() {
-      axios({
-        url: "http://150.158.84.153/edituserinfo.php",
-        method: "post",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        data: {
-          id: this.userId,
-          // id: 16,
-          nickname: this.list.nickname,
-          usericon: this.list.usericon,
-          phone: this.list.phone,
-          slog: this.list.slog,
-          password: this.list.password,
-        },
-      }).then((res) => {
-        if (res.data.code == 200) {
-          this.$Message({
-            message: "修改成功",
-            type: "success",
-          });
-          this.getuser();
-          localStorage.setItem("haschange", 1);
-          ipcRenderer.send("message", "Hello from renderer process!");
+      console.log(this.list2.password);
+      console.log(this.list.password);
+      console.log(this.list.password.length < 8);
+      if (Number(this.list.password.length) < Number(8)) {
+        console.log("少于8位");
+        this.msg = "密码最少为8位！";
+        this.show_err = true;
+        setTimeout(() => {
+          this.show_err = false;
+        }, 2000);
+        return;
+      } else {
+        if (this.list.password == this.list2.password) {
+          var data = {
+            id: this.userId,
+            // id: 16,
+            nickname: this.list.nickname,
+            usericon: this.list.usericon,
+            phone: this.list.phone,
+            slog: this.list.slog,
+          };
+        } else {
+          var data = {
+            id: this.userId,
+            // id: 16,
+            nickname: this.list.nickname,
+            usericon: this.list.usericon,
+            phone: this.list.phone,
+            slog: this.list.slog,
+            password: this.list.password,
+          };
         }
-      });
+
+        axios({
+          url: "http://150.158.84.153/edituserinfo.php",
+          method: "post",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          data,
+        }).then((res) => {
+          if (res.data.code == 200) {
+            this.$Message({
+              message: "修改成功",
+              type: "success",
+            });
+            this.getuser();
+            localStorage.setItem("haschange", 1);
+            ipcRenderer.send("message", "Hello from renderer process!");
+          }
+        });
+      }
     },
   },
 };
@@ -398,5 +432,29 @@ export default {
 .cropper {
   width: 260px;
   height: 260px;
+}
+.big_block {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.374);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.dialog {
+  position: absolute;
+  min-width: 180px;
+  max-width: 220px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #fe4c38;
+  border-radius: 5px;
+  height: 45px;
+  color: #fff;
+  text-align: center;
+  line-height: 45px;
+  font-size: 16px;
 }
 </style>

@@ -95,10 +95,14 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
+  height: 100vh;
 }
 .lists {
   display: flex;
   flex-direction: column;
+  overflow: auto;
+  height: 100%;
 }
 .title {
   background-color: #24d96f;
@@ -159,5 +163,18 @@ export default {
 .agree {
   background-color: #f1f3f4;
   color: #333;
+}
+/deep/.lists::-webkit-scrollbar {
+  width: 2px;
+}
+/deep/.lists::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #d2d2d2;
+}
+/deep/.lists::-webkit-scrollbar-button {
+  width: 2px;
+  border-radius: 50%;
+  background: black;
+  display: none;
 }
 </style>

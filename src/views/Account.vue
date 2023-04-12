@@ -31,7 +31,7 @@
         <el-input
           class="inps userpass"
           v-model="userPass"
-          placeholder="请输入密码"
+          placeholder="请输入8-16位密码"
           @keyup.enter.native="goaccount"
           show-password
           clearable
@@ -99,6 +99,12 @@ export default {
         }, 2000);
       } else if (this.userPass_ag == "") {
         this.msg = "请再次输入密码！";
+        this.show_err = true;
+        setTimeout(() => {
+          this.show_err = false;
+        }, 2000);
+      }else if (this.userPass.length < 8) {
+        this.msg = "密码最少为8位！";
         this.show_err = true;
         setTimeout(() => {
           this.show_err = false;

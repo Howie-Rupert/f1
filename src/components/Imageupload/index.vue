@@ -7,7 +7,7 @@
       :before-upload="handleBeforeUpload"
       :limit="limit"
       :on-error="handleUploadError"
-      :on-exceed="handleExceed"
+
       ref="imageUpload"
       :on-remove="handleDelete"
       :http-request="uploadeImage"

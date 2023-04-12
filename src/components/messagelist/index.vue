@@ -126,16 +126,24 @@ export default {
       var that = this;
       that.userlist = res;
       var id = this.$store.state.userid;
+      console.log(that.firstList);
       // var id = 16;
+      console.log("editdata", res);
       res.forEach((item) => {
         that.firstList.forEach((ite) => {
-          if (item.id == ite.from_userid && id == ite.to_userid) {
-            ite.nickname = item.nickname;
-            ite.usericon = item.usericon;
-          }
-          if (item.id == ite.to_userid && id == ite.from_userid) {
-            ite.nickname = item.nickname;
-            ite.usericon = item.usericon;
+          if (ite.to_userid == 0 && item.id == ite.groupId) {
+            ite.nickname = item.groupName;
+            console.log("群头像", item.groupicon);
+            ite.usericon = item.groupicon;
+          } else {
+            if (item.id == ite.from_userid && id == ite.to_userid) {
+              ite.nickname = item.nickname;
+              ite.usericon = item.usericon;
+            }
+            if (item.id == ite.to_userid && id == ite.from_userid) {
+              ite.nickname = item.nickname;
+              ite.usericon = item.usericon;
+            }
           }
         });
       });
@@ -155,9 +163,9 @@ export default {
             var tD = newdate.getDate();
             if (Y == tY && M == tM && D == tD) {
               var H =
-                date.getHours() > 10 ? date.getHours() : "0" + date.getHours();
+                date.getHours() >= 10 ? date.getHours() : "0" + date.getHours();
               var m =
-                date.getMinutes() > 10
+                date.getMinutes() >= 10
                   ? date.getMinutes()
                   : "0" + date.getMinutes();
               item.messageTime = H + ":" + m;
@@ -202,35 +210,62 @@ export default {
           console.log("消息列表", res);
           if (res.data.code == 200) {
             var lists = [];
+            var arr = [];
             this.firstList = res.data.data;
             res.data.data.forEach((item) => {
-              lists.push(item.from_userid);
-              lists.push(item.to_userid);
-            });
-            lists = new Set(lists);
-            var arr = [];
-            var leng = lists.size - 1;
-            var len = 0;
-            lists.forEach((item) => {
-              if (item != id) {
+              if (item.groupId == null) {
+                lists.push(item.from_userid);
+                lists.push(item.to_userid);
+              } else {
+                console.log("有群", item.groupId);
                 axios({
-                  url: this.baseUrl + "getUserinfo.php",
+                  url: this.baseUrl + "groupList.php",
                   method: "get",
                   params: {
-                    userid: item,
+                    groupId: item.groupId,
                   },
                 }).then((ress) => {
                   if (ress.code != 200) {
+                    console.log("群组列表", ress.data.data[0]);
                     arr.push(ress.data.data[0]);
-                    len = len + 1;
-                    console.log(len);
-                    if (len == leng) {
-                      resolve(arr);
-                    }
                   }
                 });
               }
             });
+            lists = new Set(lists);
+            console.log(lists);
+
+            var leng = lists.size - 1;
+            var len = 0;
+            if (leng > 0) {
+              lists.forEach((item) => {
+                if (item != id) {
+                  axios({
+                    url: this.baseUrl + "getUserinfo.php",
+                    method: "get",
+                    params: {
+                      userid: item,
+                    },
+                  }).then((ress) => {
+                    if (ress.code != 200) {
+                      arr.push(ress.data.data[0]);
+                      len = len + 1;
+                      console.log(len);
+                      if (len == leng) {
+                        console.log("promise返回", arr);
+                        setTimeout(() => {
+                          resolve(arr);
+                        }, 2000);
+                      }
+                    }
+                  });
+                }
+              });
+            } else {
+              setTimeout(() => {
+                resolve(arr);
+              }, 2000);
+            }
           }
         });
       });
@@ -249,12 +284,17 @@ export default {
           this.editdata(res);
         });
       });
-      if (item.from_userid != this.$store.state.userid) {
-        // if (item.from_userid != 16) {
-        this.$store.commit("SET_TOUSER", item.from_userid);
-      } else if (item.to_userid != this.$store.state.userid) {
-        // } else if (item.to_userid != 16) {
-        this.$store.commit("SET_TOUSER", item.to_userid);
+      if (item.to_userid == 0) {
+        var sendData = "!!!" + item.groupId;
+        this.$store.commit("SET_TOUSER", sendData);
+      } else {
+        if (item.from_userid != this.$store.state.userid) {
+          // if (item.from_userid != 16) {
+          this.$store.commit("SET_TOUSER", item.from_userid);
+        } else if (item.to_userid != this.$store.state.userid) {
+          // } else if (item.to_userid != 16) {
+          this.$store.commit("SET_TOUSER", item.to_userid);
+        }
       }
       console.log(this.$store.state.contectuser);
     },

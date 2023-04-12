@@ -6,7 +6,7 @@
       :file-list="mediaList"
       :on-success="handleSuccess"
       :on-exceed="exceedTips"
-      :limit="1"
+      :limit="999999999"
       :show-file-list="false"
       :on-remove="handleRemove"
       accept=".MP4, .AVI, .MKV,.mp4, .avi, .mkv"
