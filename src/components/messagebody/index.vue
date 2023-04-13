@@ -1,7 +1,21 @@
 <template>
   <div class="messagebody">
     <div class="bodyname">
-      <div>{{ otherUserInfo.nickname }}</div>
+      <div v-if="$store.state.contectuser.indexOf('!!!') == '-1'">
+        {{ otherUserInfo.nickname }}
+      </div>
+      <div v-if="$store.state.contectuser.indexOf('!!!') != '-1'">
+        <div @click="changeGroupname = false" v-if="changeGroupname">
+          {{ otherUserInfo.nickname }}
+        </div>
+        <div v-else>
+          <input
+            type="text"
+            v-model="otherUserInfo.nickname"
+            @blur="changeGroupInfo"
+          />
+        </div>
+      </div>
       <div class="otherControl" @click="showEdit">
         <img src="../../static/images/eil.png" alt="" />
       </div>
@@ -209,6 +223,14 @@
       </el-input>
       <div class="sendbtn" @click="sendmessage">发送</div>
     </div>
+    <div class="hidden" v-if="showControl" @click="showControl = false">
+      <div class="cotBody">
+        <div class="cotItem" @click.stop="delmessage">删除聊天记录</div>
+        <div v-if="contGroup" class="cotItem" @click="deleteDataG">
+          退出群聊
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -249,6 +271,9 @@ export default {
       serverTimeoutObj: "",
       repeatGroupId: [],
       isFinish: true,
+      showControl: false,
+      contGroup: false,
+      changeGroupname: true,
     };
   },
   mounted() {
@@ -280,6 +305,7 @@ export default {
       return this.contectuser;
     },
   },
+
   watch: {
     otherUserId(newData, oldData) {
       this.otheruser = newData;
@@ -291,6 +317,68 @@ export default {
     this.websock.close();
   },
   methods: {
+    deleteDataG() {
+      this.showControl = false;
+      this.$confirm("确认退出群聊?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+          var userId = this.$store.state.userid;
+          var toUserId = this.$store.state.contectuser;
+          var params = {
+            userId: userId,
+            groupId: toUserId.split("!!!")[1],
+          };
+          axios({
+            url: this.baseUrl + "delGroup.php",
+            method: "get",
+            params,
+          }).then((res) => {
+            this.$message({
+              message: "删除成功!",
+            });
+            this.$store.commit("SET_TOUSER", "006");
+          });
+        })
+        .catch(() => {});
+    },
+    delmessage() {
+      this.showControl = false;
+      console.log(this.$store.state.userid);
+      console.log(this.$store.state.contectuser);
+      var userId = this.$store.state.userid;
+      var toUserId = this.$store.state.contectuser;
+      if (toUserId.indexOf("!!!") != -1) {
+        var params = {
+          userId: userId,
+          groupId: toUserId.split("!!!")[1],
+        };
+      } else {
+        var params = {
+          userId: userId,
+          touserId: toUserId,
+        };
+      }
+
+      this.$confirm("确认清空消息记录?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+          axios({
+            url: "/api/delmessage.php",
+            method: "get",
+            params,
+          }).then((res) => {
+            this.getmessagelist();
+            this.$message({
+              message: "删除成功!",
+            });
+          });
+        })
+        .catch(() => {});
+    },
     reset() {
       clearTimeout(this.timeoutObj);
       clearTimeout(this.serverTimeoutObj);
@@ -400,6 +488,21 @@ export default {
         };
         this.websocketsend(JSON.stringify(data));
       }
+    },
+    changeGroupInfo() {
+      console.log(this.otherUserInfo.nickname);
+      axios({
+        url: this.baseUrl + "editGroup.php",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "post",
+        data: {
+          groupId: this.$store.state.contectuser.split("!!!")[1],
+          groupName: this.otherUserInfo.nickname,
+        },
+      }).then((res) => {
+        this.changeGroupname = true;
+        this.before_ws_send();
+      });
     },
     getUserInfo() {
       if (this.contectuser.indexOf("!!!") == -1) {
@@ -741,9 +844,12 @@ export default {
     showEdit() {
       if (this.otherUserId.indexOf("!!!") != -1) {
         console.log("修改群");
+        this.contGroup = true;
       } else {
         console.log("修改个人");
+        this.contGroup = false;
       }
+      this.showControl = true;
     },
   },
 };
@@ -1189,5 +1295,37 @@ export default {
   left: 55px;
   top: -5px;
   font-size: 12px;
+}
+.hidden {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cotBody {
+  width: 200px;
+  min-height: 100px;
+  background-color: #fff;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.cotItem {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: red;
+  font-size: 15px;
+  cursor: pointer;
 }
 </style>

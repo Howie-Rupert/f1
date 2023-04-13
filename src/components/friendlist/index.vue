@@ -310,8 +310,8 @@ export default {
           userid: this.$store.state.userid,
         },
       }).then((res) => {
-        this.groupList = res.data;
-        console.log("加入的群组", res.data);
+        this.groupList = res.data.data;
+        console.log("加入的群组", res.data.data);
       });
     },
   },
