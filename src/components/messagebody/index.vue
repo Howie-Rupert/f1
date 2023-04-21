@@ -225,10 +225,74 @@
     </div>
     <div class="hidden" v-if="showControl" @click="showControl = false">
       <div class="cotBody">
+        <div v-if="contGroup" class="cotItem2" @click="editGroupMember">
+          添加好友入群
+        </div>
         <div class="cotItem" @click.stop="delmessage">删除聊天记录</div>
         <div v-if="contGroup" class="cotItem" @click="deleteDataG">
           退出群聊
         </div>
+      </div>
+    </div>
+
+    <div class="editgroupmember" v-if="showAddMember">
+      <div class="mainbody">
+        <div class="friendlist">
+          <el-checkbox-group v-model="checkList" @change="showinfo">
+            <div v-for="item in afterSortList" class="friendrow">
+              <div class="sort" :style="connn(item) ? 'disabled' : ''">
+                {{ item.sort }}
+              </div>
+              <div v-for="ite in item.list" class="name_img">
+                <el-checkbox class="checkbox" :label="ite.id"> </el-checkbox>
+                <img class="userimg" :src="ite.usericon" alt="" />
+                <div class="username">
+                  {{ ite.nickname }}
+                </div>
+              </div>
+            </div>
+          </el-checkbox-group>
+        </div>
+        <div class="chooselist">
+          <p>选择联系人</p>
+          <div class="mainchoosebody">
+            <div v-if="checkUser.length != 0" class="chooseBodyList">
+              <div
+                v-if="item.id != $store.state.userid"
+                v-for="(item, index) in checkUser"
+                class="checkUserCon"
+              >
+                <img
+                  class="closeBtn"
+                  src="../../static/images/groupclose.png"
+                  alt=""
+                  @click="delSelect(index, item.id)"
+                />
+                <img class="checkUserIcon" :src="item.usericon" alt="" />
+                <span class="checkUserName">{{ item.nickname }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="btns">
+            <div
+              @click="addGroup"
+              :class="checkUser.length > 0 ? 'btnitem success' : 'btnitem'"
+            >
+              完成
+            </div>
+            <div class="btnitem" @click="closeWindow">取消</div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="big_block"
+        v-show="show_success"
+        @click="show_success = false"
+      >
+        <div class="dialog1">{{ msg }}</div>
+      </div>
+      <div class="big_block" v-show="show_err" @click="show_err = false">
+        <div class="dialog">{{ msg }}</div>
       </div>
     </div>
   </div>
@@ -243,6 +307,7 @@ import { ipcRenderer, desktopCapturer, BrowserWindow } from "electron";
 import { formatDate } from "../../utils/utils";
 import axios from "axios";
 import { mapGetters } from "vuex";
+import { getSpell } from "jian-pinyin";
 export default {
   components: { Emoji, ImgUpload, VideoUpload, FileUpload },
   data() {
@@ -274,12 +339,24 @@ export default {
       showControl: false,
       contGroup: false,
       changeGroupname: true,
+      friendlist: "",
+      show_success: false,
+      show_err: false,
+      pylist: [],
+      afterSortList: [],
+      friendlistss: [],
+      checkList: [],
+      checkList2: [],
+      checkUser: [],
+      myinfo: "",
+      msg: "",
+      groupName: "",
+      showAddMember: false,
     };
   },
   mounted() {
     this.initWebSocket();
     console.log(Date.now());
-
     axios({
       url: this.baseUrl + "getUserinfo.php",
       method: "get",
@@ -317,6 +394,13 @@ export default {
     this.websock.close();
   },
   methods: {
+    connn(data) {
+      if (data) {
+        return true;
+      } else {
+        return false;
+      }
+    },
     deleteDataG() {
       this.showControl = false;
       this.$confirm("确认退出群聊?", "提示", {
@@ -851,6 +935,202 @@ export default {
       }
       this.showControl = true;
     },
+    getfriends() {
+      var id = this.$store.state.userid;
+      //   var id = 27;
+      return new Promise((resolve, rehect) => {
+        axios({
+          url: this.baseUrl + "friendlist.php",
+          method: "get",
+          params: {
+            userid: id,
+          },
+        }).then((res) => {
+          var lists = [];
+          if (res.data.code == 200) {
+            res.data.data.forEach((item) => {
+              if (item.bsq_userid != id) {
+                lists.push(item.bsq_userid);
+              } else if (item.sq_userid != id) {
+                lists.push(item.sq_userid);
+              }
+            });
+            lists = new Set(lists);
+            console.log("lists", lists);
+            var arr = [];
+            lists.forEach((item) => {
+              axios({
+                url: this.baseUrl + "getUserinfo.php",
+                method: "get",
+                params: {
+                  userid: item,
+                },
+              }).then((ress) => {
+                if (ress.code != 200) {
+                  arr.push(ress.data.data[0]);
+                }
+              });
+            });
+            this.friendlist = arr;
+            setTimeout(() => {
+              resolve(arr);
+            }, 1000);
+          }
+        });
+      });
+    },
+    getFirst(arr) {
+      setTimeout(() => {
+        arr.forEach((item) => {
+          var str = item.nickname;
+          var pystr = getSpell(
+            str,
+            (charactor, spell) => {
+              return spell[1];
+            },
+            ""
+          );
+          this.pylist.push(pystr);
+        });
+        this.createNewList();
+      }, 1000);
+    },
+    createNewList() {
+      var friendlist = [];
+      friendlist = this.pylist.sort();
+      var arr = [];
+      friendlist.forEach((item) => {
+        arr.push(item.slice(0, 1).toUpperCase());
+      });
+      var narr = new Set(arr);
+      var newfirendlist = [];
+      narr.forEach((item) => {
+        newfirendlist.push({
+          sort: item,
+          list: [],
+        });
+      });
+      newfirendlist.forEach((item) => {
+        this.friendlist.forEach((ite) => {
+          var str = ite.nickname;
+          var pystr = getSpell(
+            str,
+            (charactor, spell) => {
+              return spell[1];
+            },
+            ""
+          );
+          if (pystr.slice(0, 1).toUpperCase() == item.sort) {
+            item.list.push(ite);
+          }
+        });
+      });
+      this.afterSortList = newfirendlist;
+      console.log("排序", this.afterSortList);
+      setTimeout(() => {
+        this.getgrouplist();
+      }, 1000);
+    },
+    getgrouplist() {
+      axios({
+        url: this.baseUrl + "groupList.php",
+        method: "get",
+        params: {
+          groupId: this.contectuser.split("!!!")[1],
+        },
+      }).then((res) => {
+        if (res.data.code == 200) {
+          var list = res.data.data[0].memberUser.split(";");
+          var after = JSON.parse(JSON.stringify(this.afterSortList));
+          list.forEach((item) => {
+            this.afterSortList.forEach((ite, index) => {
+              ite.list.forEach((itt, ind) => {
+                if (item != "") {
+                  if (item == itt.id) {
+                    this.$delete(after[index].list, ind);
+                  }
+                }
+              });
+            });
+          });
+
+          after.forEach((item, index) => {
+            if (item.list.length == 0) {
+              this.$delete(after, index);
+            }
+          });
+          after.forEach((item, index) => {
+            if (item.list.length == 0) {
+              this.$delete(after, index);
+            }
+          });
+          this.afterSortList = after;
+        }
+        this.showAddMember = true;
+      });
+    },
+    editGroupMember() {
+      this.getfriends().then((res) => {
+        console.log("初始化", res);
+        setTimeout(() => {
+          this.getFirst(res);
+        }, 200);
+      });
+    },
+    showinfo(value) {
+      this.checkUser = [];
+      this.checkList.forEach((item) => {
+        this.friendlist.forEach((ite) => {
+          if (item == ite.id) {
+            console.log(ite.nickname);
+            this.checkUser.push(ite);
+          }
+        });
+      });
+      console.log(this.checkUser);
+    },
+    delSelect(index, oin) {
+      this.checkUser.splice(index, 1);
+      const list = this.checkList.filter((item) => {
+        return item != oin;
+      });
+      this.checkList = list;
+      console.log(list);
+    },
+    closeWindow() {
+      this.showAddMember = false;
+    },
+    addGroup() {
+      var str = "";
+      this.checkUser.forEach((item) => {
+        str += item.id + ";";
+      });
+      console.log(str);
+      axios({
+        url: this.baseUrl + "addGroupMem.php",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        method: "post",
+        data: {
+          id: this.contectuser.split("!!!")[1],
+          member: str,
+        },
+      }).then((res) => {
+        console.log(res);
+        if (res.data.status == "success") {
+          this.msg = "添加成功";
+          this.show_success = true;
+          setTimeout(() => {
+            this.closeWindow();
+          }, 500);
+        } else {
+          this.msg = "添加失败";
+          this.show_err = true;
+          setTimeout(() => {
+            this.closeWindow();
+          }, 500);
+        }
+      });
+    },
   },
 };
 </script>
@@ -1327,5 +1607,231 @@ export default {
   color: red;
   font-size: 15px;
   cursor: pointer;
+}
+.cotItem2 {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  font-size: 15px;
+  cursor: pointer;
+}
+.editgroupmember {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.mainbody {
+  width: 80%;
+  height: 80%;
+  display: flex;
+
+  z-index: 99999;
+  background-color: #fff;
+}
+.friendlist {
+  width: 40%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 2px solid #f5f5f5;
+}
+/deep/.friendlist::-webkit-scrollbar {
+  width: 2px;
+}
+/deep/.friendlist::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #d2d2d2;
+}
+/deep/.friendlist::-webkit-scrollbar-button {
+  width: 2px;
+  border-radius: 50%;
+  background: black;
+  display: none;
+}
+.friendrow {
+  height: auto;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+}
+.sort {
+  color: #b8b7b7;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.name_img {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+  width: auto;
+}
+.checkbox {
+  margin-right: 10px;
+}
+.userimg {
+  width: 32px;
+  height: 32px;
+  border-radius: 5px;
+}
+.username {
+  margin-left: 15px;
+  font-size: 14px !important;
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chooselist {
+  width: 60%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 20px;
+}
+.chooselist > p {
+  font-size: 12px;
+  text-align: left;
+}
+.mainchoosebody {
+  height: 60%;
+  width: 100%;
+  margin-top: 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.btns {
+  width: 100%;
+  display: flex;
+  margin-top: 15px;
+  justify-content: space-around;
+}
+.btnitem {
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #63c160;
+  cursor: pointer;
+  background-color: #f3f3f3;
+}
+.btnitem:first-child {
+  background-color: #ebebeb;
+  color: #9e9e9e;
+}
+.btnitem:hover {
+  background-color: #dbdbdb;
+}
+/deep/.el-checkbox__label {
+  width: 0px !important;
+  overflow: hidden;
+}
+.chooseBodyList {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.checkUserCon {
+  width: 50px;
+  position: relative;
+}
+.checkUserIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  margin: 10px;
+}
+/deep/.mainchoosebody::-webkit-scrollbar {
+  width: 2px;
+}
+/deep/.mainchoosebody::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background: #d2d2d2;
+}
+/deep/.mainchoosebody::-webkit-scrollbar-button {
+  width: 2px;
+  border-radius: 50%;
+  background: black;
+  display: none;
+}
+.checkUserName {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+}
+.closeBtn {
+  position: absolute;
+  top: 4px;
+  right: -8px;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+.success {
+  background-color: #07c160 !important;
+  color: #fff !important;
+}
+.success:hover {
+  background-color: #38cd7f !important;
+  color: #fff !important;
+}
+
+.big_block {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.374);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.dialog1 {
+  position: absolute;
+  width: 180px;
+  background-color: #13c468;
+  border-radius: 5px;
+  height: 45px;
+  color: #fff;
+  text-align: center;
+  line-height: 45px;
+  font-size: 16px;
+  z-index: 99999999;
+}
+.dialog {
+  position: absolute;
+  width: 180px;
+  background-color: #fe4c38;
+  border-radius: 5px;
+  height: 45px;
+  color: #fff;
+  text-align: center;
+  line-height: 45px;
+  font-size: 16px;
+  z-index: 99999999;
+
+}
+
+/deep/ .el-input__inner {
+  width: 100%;
+  height: 30px;
+  font-size: 12px;
+  line-height: 30px;
+  margin-top: 20px;
+  float: left;
 }
 </style>
