@@ -88,7 +88,7 @@ export default {
         .then(() => {
           var params = JSON.parse(localStorage.getItem("deleteInfo"));
           axios({
-            url: "/api/deletefriend.php",
+            url:  this.baseUrl +"deletefriend.php",
             method: "get",
             params: {
               userid: params.userid,

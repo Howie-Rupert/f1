@@ -6,7 +6,7 @@
       @mouseleave="mini_img_or = mini_img"
       class="mini_btn"
     >
-      <img :src="mini_img_or" alt="" />
+    <i class="el-icon-minus"></i>
     </div>
     <div
       @click.stop="closeWindow"
@@ -14,7 +14,7 @@
       @mouseleave="close_img_or = close_img"
       class="close_btn"
     >
-      <img :src="close_img_or" alt="" />
+    <i class="el-icon-close"></i>
     </div>
   </div>
 </template>

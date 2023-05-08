@@ -16,7 +16,6 @@ Vue.prototype.$Message = Message
 // Vue.prototype.baseUrl = 'http://www.test.com:8083/'
 Vue.prototype.baseUrl = 'http://150.158.84.153/'
 Vue.config.productionTip = false
-
 new Vue({
   router,
   store,

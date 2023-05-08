@@ -67,6 +67,7 @@
             <a
               v-if="item.message_type == 4"
               :href="item.message"
+              @click.prevent="download(item.message, $event)"
               download="download"
             >
               <div class="content-file" title="点击下载">
@@ -146,6 +147,7 @@
               v-if="item.message_type == 4"
               :href="item.message"
               download="download"
+              @click.prevent="download(item.message, $event)"
             >
               <div
                 :class="
@@ -225,6 +227,9 @@
     </div>
     <div class="hidden" v-if="showControl" @click="showControl = false">
       <div class="cotBody">
+        <div v-if="contGroup" class="cotItem2" @click="showGroupMembers">
+          查看群成员
+        </div>
         <div v-if="contGroup" class="cotItem2" @click="editGroupMember">
           添加好友入群
         </div>
@@ -295,6 +300,22 @@
         <div class="dialog">{{ msg }}</div>
       </div>
     </div>
+
+    <div class="groupmembers" v-if="showGroupMember">
+      <div class="mainbody2">
+        <span class="closeshowmem" @click="showGroupMember = false">x</span>
+        <div class="chooseBodyList">
+          <div
+            class="checkUserCon2"
+            @click="openview(item)"
+            v-for="item in groupMembersList"
+          >
+            <img class="checkUserIcon" :src="item.usericon" alt="" />
+            <span class="checkUserName">{{ item.nickname }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -352,6 +373,8 @@ export default {
       msg: "",
       groupName: "",
       showAddMember: false,
+      showGroupMember: false,
+      groupMembersList: [],
     };
   },
   mounted() {
@@ -451,7 +474,7 @@ export default {
       })
         .then(() => {
           axios({
-            url: "/api/delmessage.php",
+            url: this.baseUrl + "delmessage.php",
             method: "get",
             params,
           }).then((res) => {
@@ -573,6 +596,27 @@ export default {
         this.websocketsend(JSON.stringify(data));
       }
     },
+    download(url, event) {
+      event.preventDefault();
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.responseType = "blob";
+      xhr.onload = function () {
+        if (this.status === 200) {
+          const blob = new Blob([this.response], {
+            type: xhr.getResponseHeader("Content-Type"),
+          });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = url.substring(url.lastIndexOf("/") + 1);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      };
+      xhr.send();
+    },
     changeGroupInfo() {
       console.log(this.otherUserInfo.nickname);
       axios({
@@ -648,6 +692,11 @@ export default {
         });
         // }
       });
+    },
+    openview(item) {
+      console.log(item.id);
+      this.$store.commit("SET_TOUSER", item.id);
+      this.showGroupMember = false;
     },
     getmessagelist() {
       var id = this.$store.state.userid;
@@ -1075,6 +1124,19 @@ export default {
         setTimeout(() => {
           this.getFirst(res);
         }, 200);
+      });
+    },
+    showGroupMembers() {
+      var groupId = this.$store.state.contectuser.split("!!!")[1];
+      axios({
+        url: this.baseUrl + "returnGroupM.php",
+        method: "get",
+        params: {
+          groupId,
+        },
+      }).then((res) => {
+        this.groupMembersList = res.data.data;
+        this.showGroupMember = true;
       });
     },
     showinfo(value) {
@@ -1630,13 +1692,35 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.mainbody {
-  width: 80%;
-  height: 80%;
+.groupmembers {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 99999;
   display: flex;
-
+  justify-content: center;
+  align-items: center;
+}
+.mainbody {
+  width: 60%;
+  min-height: 200px;
+  display: flex;
+  padding: 20px;
   z-index: 99999;
   background-color: #fff;
+}
+.mainbody2 {
+  min-width: 200px;
+  max-width: 400px;
+  min-height: 200px;
+  display: flex;
+  padding: 20px;
+  z-index: 99999;
+  background-color: #fff;
+  position: relative;
 }
 .friendlist {
   width: 40%;
@@ -1738,14 +1822,29 @@ export default {
   overflow: hidden;
 }
 .chooseBodyList {
-  width: 100%;
+  width: 500px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 .checkUserCon {
   width: 50px;
+  height: 60px;
   position: relative;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.checkUserCon2 {
+  width: 50px;
+  height: 60px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  cursor: pointer;
 }
 .checkUserIcon {
   width: 40px;
@@ -1823,7 +1922,6 @@ export default {
   line-height: 45px;
   font-size: 16px;
   z-index: 99999999;
-
 }
 
 /deep/ .el-input__inner {
@@ -1833,5 +1931,12 @@ export default {
   line-height: 30px;
   margin-top: 20px;
   float: left;
+}
+.closeshowmem {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  font-size: 20px;
+  cursor: pointer;
 }
 </style>

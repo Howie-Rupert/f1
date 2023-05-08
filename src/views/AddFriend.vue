@@ -18,7 +18,7 @@
         <div class="userinfo" v-for="item in lists">
           <el-avatar shape="circle" :size="50" :src="item.usericon"></el-avatar>
           <div style="margin-left: 10px">
-            {{ item.nickname }}
+            <div class="nicknameCont">{{ item.nickname }}</div>
             <div class="addfriend" @click="addfriend(item.id)">+ 好友</div>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default {
         console.log(res);
         if ((res.data.code = 200)) {
           this.$Message({
-            message: "添加成功",
+            message: "已发送好友申请",
             type: "success",
           });
         }
@@ -172,10 +172,13 @@ export default {
 }
 .userinfo {
   display: flex;
-  align-items: center;
+
+  margin-right: 40px;
+  margin-bottom: 40px;
+  width: 20%;
 }
 .addfriend {
-  width: auto;
+  width: 45px;
   height: auto;
   font-size: 14px;
   padding: 0 5px 0 5px;
@@ -183,10 +186,18 @@ export default {
   background-color: #24d96f;
   border-radius: 11px;
   cursor: pointer;
+  
 }
 .result {
   text-align: center;
   font-size: 12px;
   color: #cccfd6;
+}
+.nicknameCont{
+  max-width: 80px;
+  overflow: hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
+  margin-bottom:10px;
 }
 </style>

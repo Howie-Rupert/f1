@@ -25,7 +25,24 @@
         </div>
         <div class="control">
           <div class="btn agree" v-if="item.is_agree == 1">已同意</div>
-          <div class="btn" v-else @click="agree(item.id)">同意</div>
+          <div class="btn agree" v-if="item.is_agree == 2">已拒绝</div>
+          <el-dropdown
+            v-if="item.is_agree == 0"
+            split-button
+            type="primary"
+            @command="agree"
+          >
+            操作
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item :command="commandValue('1', item.id)"
+                >同意</el-dropdown-item
+              >
+              <el-dropdown-item :command="commandValue('2', item.id)"
+                >拒绝</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </el-dropdown>
+          <!-- <div class="btn" v-else @click="agree(item.id)">同意</div> -->
         </div>
       </div>
     </div>
@@ -69,17 +86,26 @@ export default {
         }
       });
     },
-    agree(id) {
+    commandValue(type, command) {
+      return {
+        type: type,
+        command: command,
+      };
+    },
+    agree(command) {
+      console.log(command.type, command.command);
       axios({
         url: this.baseUrl + "editfriend.php",
         method: "get",
         params: {
-          id: id,
+          id: command.command,
+          agree: command.type,
         },
       }).then((res) => {
         console.log(res);
+        var msg = "好友申请已" + (command.type == "1" ? "同意" : "拒绝");
         this.$Message({
-          message: "好友申请通过",
+          message: msg,
           type: "success",
         });
         this.getlists();
@@ -150,15 +176,16 @@ export default {
   margin-bottom: 20px;
 }
 .btn {
-  width: 50px;
-  height: 20px;
+  width: 65px;
+  height: 16px;
   background-color: #24d96f;
   text-align: center;
-  line-height: 20px;
+  line-height: 16px;
   border-radius: 5px;
-  padding: 2px;
+  padding: 5px;
   color: #fff;
   cursor: pointer;
+  font-size: 12px;
 }
 .agree {
   background-color: #f1f3f4;
@@ -176,5 +203,13 @@ export default {
   border-radius: 50%;
   background: black;
   display: none;
+}
+/deep/.el-button-group {
+  width: 70px !important;
+}
+/deep/.el-button--primary {
+  background-color: #24d96f;
+  border-color: #24d96f;
+  padding: 5px !important;
 }
 </style>

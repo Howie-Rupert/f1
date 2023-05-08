@@ -313,6 +313,7 @@ export default {
   text-align: left;
   justify-content: center;
   align-items: center;
+  background-color: #fff;
 }
 .addtexts {
   font-size: 12px;
