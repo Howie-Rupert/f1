@@ -14,7 +14,7 @@ async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 300,
-    height: 400,
+    height: 420,
     title: "登录",
     frame: false,
     webPreferences: {

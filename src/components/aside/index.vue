@@ -184,11 +184,22 @@ export default {
       ipcRenderer.send("groupAdd", this.$store.state.userid);
     },
     logout() {
-      this.$store.commit("SET_USERID", "");
-      this.$store.commit("SET_TOUSER", "");
-      this.$store.commit("SET_MESSAGE", "");
-      localStorage.clear();
-      this.$router.push("/");
+      this.axios({
+        url: this.baseUrl + "logOut.php",
+        method: "get",
+        params: {
+          userId: this.userid,
+        },
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code == 200) {
+          this.$store.commit("SET_USERID", "");
+          this.$store.commit("SET_TOUSER", "");
+          this.$store.commit("SET_MESSAGE", "");
+          localStorage.clear();
+          this.$router.push("/");
+        }
+      });
     },
     openmyview() {
       ipcRenderer.send("myinfo", this.$store.state.userid);
@@ -327,7 +338,7 @@ export default {
 .addtexts:first-child {
   border-bottom: 1px solid #f5f5f5;
 }
-.nickname{
+.nickname {
   width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;

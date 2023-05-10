@@ -44,6 +44,12 @@
       </div>
       <div class="login_btn" @click="gologin">登录</div>
       <div class="new_account"><span @click="account">新用户注册</span></div>
+      <div class="forgot">
+        <span>如果忘记密码请联系管理员</span>
+      </div>
+      <div class="forgot2">
+        <span>邮箱:2948281794@qq.com</span>
+      </div>
     </div>
     <div class="big_block" v-show="show_err" @click="show_err = false">
       <div class="dialog">{{ msg }}</div>
@@ -117,7 +123,11 @@ export default {
               this.$router.push("/main");
             }, 3000);
           } else {
-            this.msg = "账号或密码错误！";
+            if (res.data.code == 509) {
+              this.msg = res.data.msg;
+            } else {
+              this.msg = "账号或密码错误！";
+            }
             this.show_err = true;
             setTimeout(() => {
               this.show_err = false;
@@ -142,6 +152,9 @@ export default {
 <style scoped>
 .login_body {
   padding-top: 30px;
+}
+.login_body::-webkit-scrollbar {
+  display: none;
 }
 .topbar {
   position: absolute;
@@ -245,10 +258,12 @@ export default {
 }
 .dialog {
   position: absolute;
-  width: 180px;
   background-color: #fe4c38;
   border-radius: 5px;
-  height: 45px;
+  padding-left: 10px;
+  padding-right: 10px;
+  min-height: 45px;
+  max-width: 85%;
   color: #fff;
   text-align: center;
   line-height: 45px;
@@ -258,6 +273,17 @@ export default {
   font-size: 12px;
   color: #1677d2;
   margin-top: 10px;
+  cursor: pointer;
+}
+.forgot {
+  font-size: 12px;
+  color: #c0c4cc;
+  margin-top: 30px;
+  cursor: pointer;
+}
+.forgot2 {
+  font-size: 12px;
+  color: #c0c4cc;
   cursor: pointer;
 }
 </style>

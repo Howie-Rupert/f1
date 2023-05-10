@@ -6,7 +6,7 @@
       @mouseleave="mini_img_or = mini_img"
       class="mini_btn"
     >
-    <i class="el-icon-minus"></i>
+      <i class="el-icon-minus"></i>
     </div>
     <div
       @click.stop="closeWindow"
@@ -14,7 +14,7 @@
       @mouseleave="close_img_or = close_img"
       class="close_btn"
     >
-    <i class="el-icon-close"></i>
+      <i class="el-icon-close"></i>
     </div>
   </div>
 </template>
@@ -50,7 +50,18 @@ export default {
     },
     closeWindow() {
       console.log("关闭");
-      ipcRenderer.send("closeWindowMain");
+      this.axios({
+        url: this.baseUrl + "logOut.php",
+        method: "get",
+        params: {
+          userId: this.$store.state.userid,
+        },
+      }).then((res) => {
+        console.log(res);
+        if (res.data.code == 200) {
+          ipcRenderer.send("closeWindowMain");
+        }
+      });
     },
   },
 };
