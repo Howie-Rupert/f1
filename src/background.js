@@ -14,7 +14,7 @@ async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 300,
-    height: 420,
+    height: 450,
     title: "登录",
     frame: false,
     webPreferences: {
@@ -39,7 +39,7 @@ async function createWindow() {
     win.webContents.send('message', userinfo);
   });
   ipcMain.on("Login", e => {
-    win.setSize(300, 400)
+    win.setSize(300, 450)
   })
   ipcMain.on("LoginSuccess", e => {
     win.setSize(1050, 700)

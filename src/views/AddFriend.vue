@@ -69,7 +69,7 @@ export default {
       this.lists = [];
       if (this.keyword == "") return;
       let exp = /^[+-]?\d*(\.\d*)?(e[+-]?\d+)?$/;
-      if (exp.test(this.keyword)) {
+      if (exp.test(this.keyword) && this.keyword.length == 11) {
         var params = {
           phone: this.keyword,
         };
@@ -186,18 +186,17 @@ export default {
   background-color: #24d96f;
   border-radius: 11px;
   cursor: pointer;
-  
 }
 .result {
   text-align: center;
   font-size: 12px;
   color: #cccfd6;
 }
-.nicknameCont{
+.nicknameCont {
   max-width: 80px;
   overflow: hidden;
-  white-space:nowrap;
+  white-space: nowrap;
   text-overflow: ellipsis;
-  margin-bottom:10px;
+  margin-bottom: 10px;
 }
 </style>

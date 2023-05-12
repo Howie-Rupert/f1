@@ -152,6 +152,7 @@ export default {
 <style scoped>
 .login_body {
   padding-top: 30px;
+  overflow: hidden;
 }
 .login_body::-webkit-scrollbar {
   display: none;

@@ -91,7 +91,13 @@ export default {
         setTimeout(() => {
           this.show_err = false;
         }, 2000);
-      } else if (this.userPass == "") {
+      }else if(this.userName.length < 4){
+        this.msg = "账号长度最少4位！";
+        this.show_err = true;
+        setTimeout(() => {
+          this.show_err = false;
+        }, 2000);
+      }else if (this.userPass == "") {
         this.msg = "密码不能为空！";
         this.show_err = true;
         setTimeout(() => {
